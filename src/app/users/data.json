@@ -1,0 +1,13 @@
+[
+
+  {
+    "id" : "string",
+    "firstName": "string",
+    "lastName": "string",
+    "email": "string",
+    "username": "string",
+    "phone": "string",
+    "userrole": "string",
+    "languagePreference": "string"
+  }
+]
