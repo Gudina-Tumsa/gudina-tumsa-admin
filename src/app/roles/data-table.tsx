@@ -104,16 +104,10 @@ import {
 
 export const schema = z.object({
   id: z.string(),
-  firstName: z.string(),
-  lastName: z.string(),
-  email: z.string(),
-  username: z.string(),
-  phone: z.string(),
-  userrole: z.string(),
-  languagePreference: z.string(),
+  name: z.string(),
+  permissions: z.string(),
 
 })
-
 
 
 function DragHandle({ id }: { id: string }) {
@@ -171,72 +165,34 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "id",
     header: "id",
     cell: ({ row }) => (
-
-     <p> {row.original.id}</p>
+      <p>{row.original.id}</p>
     ),
     enableHiding: false,
   },
   {
 
-    accessorKey: "firstName",
-    header: "first name",
+    accessorKey: "name",
+    header: "name",
     cell: ({ row }) => (
       <div className="w-32">
-          {row.original.firstName}
+          <p>{row.original.name}</p>
       </div>
     ),
   },
-  {
-    accessorKey: "lastName",
-    header: "Last Name",
-    cell: ({ row }) => (
-        <p>{row.original.lastName}</p>
 
+  {
+
+    accessorKey: "permissions",
+    header: "permissions",
+    cell: ({ row }) => (
+        <div className="w-32">
+          <p>{row.original.permissions}</p>
+        </div>
     ),
   },
 
-
-  {
-    accessorKey: "email",
-    header : "email",
-
-    cell: ({ row }) => (
-        <p>{row.original.email}</p>
-    ),
-  },
-  {
-
-    accessorKey: "username",
-    header : "username",
-    cell: ({ row }) => (
-      <p>{row.original.email}</p>
-    ),
-  },
-  {
-    accessorKey: "phone",
-    header: () => <div className="w-full text-right">phone</div>,
-    cell: ({ row }) => (
-      <p>{row.original.phone}</p>
-    ),
-  },
-  {
-
-    accessorKey: "userrole",
-    header : "userrole",
-    cell: ({ row }) => (
-        <p>{row.original.userrole}</p>
-    ),
-  },
-
-  {
-    accessorKey: "languagePreference",
-    header: "languagePreference",
-    cell: ({ row }) => (
-      <p>{row.original.languagePreference}</p>
-    ),
-  },
-    
-
+ 
+  
 
   {
     id: "actions",
@@ -535,24 +491,4 @@ export function DataTable({ data: initialData, }: { data: z.infer<typeof schema>
     </Tabs>
   )
 }
-
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-]
-
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "var(--primary)",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "var(--primary)",
-  },
-} satisfies ChartConfig
 

@@ -5,16 +5,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="67eed5a9-951b-456d-95bc-1d33572a83ba" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/app/category/data-table.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/roles/data-table.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib/api/roles.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/login-form.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/login-form.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/books/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/books/data-table.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/books/data.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/books/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/books/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/category/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/category/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/roles/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/roles/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/users/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/users/data-table.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/users/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/users/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/api/user.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/user.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -35,7 +49,7 @@
     "git-widget-placeholder": "main",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
-    "last_opened_file_path": "/home/abenezer121/Music/project/online-library-project/online-library-admin/src/app/users",
+    "last_opened_file_path": "/home/abenezer121/Music/project/online-library-project/online-library-admin/src/app/roles",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -49,10 +63,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/app/roles" />
+      <recent name="$PROJECT_DIR$/src/app/category" />
       <recent name="$PROJECT_DIR$/src/app/users" />
       <recent name="$PROJECT_DIR$/src/app/books" />
       <recent name="$PROJECT_DIR$/src/app" />
-      <recent name="$PROJECT_DIR$/src/features" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/app/home" />
@@ -100,6 +115,8 @@
       <workItem from="1750931594565" duration="15269000" />
       <workItem from="1751023378526" duration="2787000" />
       <workItem from="1751026181543" duration="3920000" />
+      <workItem from="1751038647877" duration="1180000" />
+      <workItem from="1751039846877" duration="4348000" />
     </task>
     <servers />
   </component>

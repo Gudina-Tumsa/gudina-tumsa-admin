@@ -1,16 +1,39 @@
+"use client"
 import { AppSidebar } from "@/components/app-sidebar"
-import { ChartAreaInteractive } from "@/components/chart-area-interactive"
-import { DataTable } from "@/components/data-table"
-import { SectionCards } from "@/components/section-cards"
-import { SiteHeader } from "@/components/site-header"
+import { DataTable } from "./data-table"
+    import {useState , useEffect} from "react"
 import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
-
-import data from "../data.json"
-
+import {getCategories} from "./../../lib/api/category"
+interface CategoryInterface {
+  "id": string;
+  "name": string;
+  "nameTranslations": string;
+  "description" : string;
+}
 export default function Page() {
+  const [categories , setCategories] = useState<CategoryInterface[]>([])
+
+  useEffect(() => {
+    getCategories({page : 1 , limit :  20}).then((data)=>{
+      let bookCollection : CategoryInterface[] = []
+      data?.data?.categories?.map((n)=>{
+
+        bookCollection.push({
+          "id" :n._id,
+          "name": n.name,
+          "nameTranslations": n.nameTranslations.toString(),
+          "description": n.description,
+
+        })
+      })
+      setCategories(bookCollection)
+    }).catch((err : unknown)=>{
+      console.log(err)
+    })
+  }, []);
   return (
     <SidebarProvider
       style={
@@ -27,7 +50,12 @@ export default function Page() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
 
-              <DataTable data={data} />
+
+              {categories.length > 0 ? (
+                  <DataTable data={categories} />
+              ) : (
+                  <div className="text-center text-muted">No categories found or still loading...</div>
+              )}
             </div>
           </div>
         </div>
