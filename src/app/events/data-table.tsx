@@ -47,9 +47,30 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table"
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+
 import { z } from "zod"
+
+import { useIsMobile } from "@/hooks/use-mobile"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -80,197 +101,136 @@ import {
   TabsContent,
 
 } from "@/components/ui/tabs"
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { useEffect, useState } from "react"
-import toast from "react-hot-toast"
-import { deleteBook } from "@/lib/api/book"
-import { getCategories } from "@/lib/api/category"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { useState } from "react"
+import { useSelector } from "react-redux"
+import { RootState } from "../store/store"
+import toast from "react-hot-toast";
+import { deleteEvent } from "@/lib/api/events"
 
 export const schema = z.object({
   id: z.string(),
   title: z.string(),
-  titleTranslations: z.string(),
-  author: z.string(),
-  description: z.string(),
-  publicationYear: z.string(),
-  category: z.string(),
-  language: z.string(),
-  pageCount : z.string()
-
+  location: z.string(),
+  startDate :z.string(),
+  endDate :z.string(),
 })
 
-export default function CreateBookSection() {
+export interface CreateEventRequest {
+  title: string;
+  description: string;
+  location: string;
+  startDate: Date;
+  endDate: Date;
+  createdBy: string;
+  isActive?: boolean;
+}
 
-  interface CategoryInterface {
-    id  : string;
-    name : string;
-  }
-  const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState<CategoryInterface[]>([]);
-
-  const [formData, setFormData] = useState({
+export default function CreateSection() {
+  const [formData, setFormData] = useState<CreateEventRequest>({
     title: "",
-    author: "",
-    isbn: "",
     description: "",
-    publisher: "",
-    publicationYear: "2023",
-    language: "en",
-    category: "", // category ID
-    tags: ["ai"],
-    titleTranslations: { am: "የመጀመሪያዬ መፅሐፍ" },
-    authorTranslations: { am: "ጄን ዶ" },
-    descriptionTranslations: { am: "ይህ ምሳሌ መግለጫ ነው" },
-    pageCount: 300,
-    uploadDate: "2024-01-01T00:00:00.000Z",
-    uploadedBy: "685af4d0d64d5854fe34f20b", // user ID
+    location: "",
+    startDate: new Date(),
+    endDate: new Date(),
+    createdBy: "", 
     isActive: true,
-    metadata: { genre: "Sci-Fi", level: "Intermediate" },
   });
+  const user = useSelector((state: RootState) => state.user);
+  const [loading, setLoading] = useState(false);
 
-  const [bookFile, setBookFile] = useState<File | null>(null);
-  const [coverImage, setCoverImage] = useState<File | null>(null);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      [name]: value,
+      [name]: name.includes("Date") ? new Date(value) : value,
     }));
   };
 
   const handleSubmit = async () => {
     try {
-      if (!bookFile || !coverImage) {
-        toast.error("Please upload both book file and cover image.");
-        return;
-      }
-
       setLoading(true);
-
-      const form = new FormData();
-      form.append("bookFile", bookFile);
-      form.append("coverImage", coverImage);
-      for (const key in formData) {
-        const value = formData[key as keyof typeof formData];
-        if (typeof value === "object") {
-          form.append(key, JSON.stringify(value));
-        } else {
-          form.append(key, value as string);
-        }
-      }
-
-      const res = await fetch("http://localhost:3000/api/book", {
+      const res = await fetch("http://localhost:3000/api/events", {
         method: "POST",
-        body: form,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
 
-      if (!res.ok) throw new Error("Failed to upload book");
+      if (!res.ok) throw new Error("Failed to create event");
 
-      toast.success("Book uploaded successfully");
-      setBookFile(null);
-      setCoverImage(null);
+      toast.success("Event created successfully");
+      setFormData({
+        title: "",
+        description: "",
+        location: "",
+        startDate: new Date(),
+        endDate: new Date(),
+        createdBy: user?.user?._id ?? "", 
+        isActive: true,
+      });
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to upload book");
+      console.log(error)
+      toast.error("Failed to create event");
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    getCategories({ page: 1, limit: 100 })
-      .then((res) =>{
-        let _categories : CategoryInterface[] = []
-        res.data?.categories.map((data)=>{
-          categories.push({id : data._id , name : data.name})
-        })
-        setCategories(_categories)
-      })
-      .catch(() => toast.error("Failed to load categories"));
-  }, []);
 
   return (
     <div className="flex items-center gap-2">
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="outline" size="sm">
-            + Upload Book
+            <IconPlus />
+            <span className="hidden lg:inline">Add Events</span>
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-xl overflow-y-auto max-h-[90vh]">
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>Upload a New Book</DialogTitle>
-            <DialogDescription>Fill in book details and upload files.</DialogDescription>
+            <DialogTitle>Add a New Event</DialogTitle>
+            <DialogDescription>
+              Fill in the information below to create a new event.
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 pt-4">
-            <Label>Title</Label>
-            <Input name="title" value={formData.title} onChange={handleInputChange} />
-
-            <Label>Author</Label>
-            <Input name="author" value={formData.author} onChange={handleInputChange} />
-
-            <Label>ISBN</Label>
-            <Input name="isbn" value={formData.isbn} onChange={handleInputChange} />
-
-            <Label>Description</Label>
-            <Input name="description" value={formData.description} onChange={handleInputChange} />
-
-            <Label>Publisher</Label>
-            <Input name="publisher" value={formData.publisher} onChange={handleInputChange} />
-
-            <Label>Category</Label>
-            <Select
-              value={formData.category}
-              onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Label>Book File (PDF)</Label>
-            <Input type="file" accept=".pdf" onChange={(e) => setBookFile(e.target.files?.[0] ?? null)} />
-
-            <Label>Cover Image (PNG/JPEG)</Label>
-            <Input type="file" accept="image/*" onChange={(e) => setCoverImage(e.target.files?.[0] ?? null)} />
-
-            <div className="flex items-center space-x-2 pt-2">
-              <Checkbox
-                id="active"
-                checked={formData.isActive}
-                onCheckedChange={(checked) =>
-                  setFormData((prev) => ({ ...prev, isActive: !!checked }))
-                }
-              />
-              <Label htmlFor="active">Is Active</Label>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Title</Label>
+              <input name="title" className="w-full border rounded px-2 py-1" value={formData.title} onChange={handleChange} placeholder="Enter title" />
             </div>
-
-            <Button onClick={handleSubmit} disabled={loading} className="w-full">
-              {loading ? "Uploading..." : "Upload Book"}
-            </Button>
+            <div>
+              <Label>Description</Label>
+              <textarea name="description" className="w-full border rounded px-2 py-1" value={formData.description} onChange={handleChange} placeholder="Event description" />
+            </div>
+            <div>
+              <Label>Location</Label>
+              <input name="location" className="w-full border rounded px-2 py-1" value={formData.location} onChange={handleChange} placeholder="Event location" />
+            </div>
+            <div>
+              <Label>Start Date</Label>
+              <input name="startDate" type="datetime-local" className="w-full border rounded px-2 py-1" onChange={handleChange} />
+            </div>
+            <div>
+              <Label>End Date</Label>
+              <input name="endDate" type="datetime-local" className="w-full border rounded px-2 py-1" onChange={handleChange} />
+            </div>
           </div>
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="secondary">Cancel</Button>
+            </DialogClose>
+            <Button onClick={handleSubmit} disabled={loading}>
+              {loading ? "Saving..." : "Save"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
   );
 }
-
 
 function DragHandle({ id }: { id: string }) {
   const { attributes, listeners } = useSortable({
@@ -341,57 +301,40 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       </div>
     ),
   },
+
   {
 
-    accessorKey: "titleTranslations",
-    header: "title translations",
+    accessorKey: "location",
+    header: "location",
     cell: ({ row }) => (
-        <p>{row.original.titleTranslations}</p>
-    ),
-  },
-  {
-    accessorKey: "author",
-    header: "author",
-    cell: ({ row }) => (
-      <p>{row.original.author}</p>
+        <div className="w-32">
+          <p>{row.original.location}</p>
+        </div>
     ),
   },
   {
 
-    accessorKey: "description",
-    header: "description",
+    accessorKey: "start date",
+    header: "end date",
     cell: ({ row }) => (
-      <p>{row.original.description}</p>
+        <div className="w-32">
+          <p>{row.original.endDate}</p>
+        </div>
     ),
   },
   {
 
-    accessorKey: "publicationYear",
-    header: "publication year",
+    accessorKey: "end date",
+    header: "end date",
     cell: ({ row }) => (
-      <p>{row.original.publicationYear}</p>
+        <div className="w-32">
+          <p>{row.original.endDate}</p>
+        </div>
     ),
   },
-  {
-    accessorKey: "category",
-    header: "category",
-    cell: ({ row }) => (
-        <p>{row.original.category}</p>
-    ),
-  },
-  {
-    header: "language",
-    cell: ({ row }) => (
-        <p>{row.original.language}</p>
-    ),
-  },{
-    accessorKey: "pageCount",
-    header: "page count",
-    cell: ({ row }) => (
-        <p>{row.original.pageCount}</p>
-    ),
 
-  },
+ 
+  
 
   {
     id: "actions",
@@ -408,15 +351,16 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-32">
-        
+         
           <DropdownMenuItem variant="destructive" onClick={()=>{
-             deleteBook(row.original.id)
-             .then(() => {
-               toast.success("book deleted successfully");
-             })
-             .catch((err) => {
-               toast.error("book to delete event");
-             });
+            deleteEvent(row.original.id)
+            .then(() => {
+              toast.success("Event deleted successfully");
+            })
+            .catch((err) => {
+              toast.error("Failed to delete event");
+            });
+          
           }}>Delete</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -536,8 +480,10 @@ export function DataTable({ data: initialData, }: { data: z.infer<typeof schema>
         </Select>
 
         <div></div>
-        <CreateBookSection/>
+        <CreateSection />
       </div>
+
+
       <TabsContent
         value="outline"
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"

@@ -64,6 +64,11 @@ const data = {
       url: "/roles",
       icon: IconUsers,
     },
+    {
+      title: "Events",
+      url: "/events",
+      icon: IconUsers,
+    },
   ],
 
   navSecondary: [

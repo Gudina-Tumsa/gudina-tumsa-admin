@@ -34,8 +34,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     try {
       const response = await loginUser({ email, password })
 
-      // localStorage.setItem("accessToken", response.data.session.token)
-      // localStorage.setItem("refreshToken", response.data.session.refreshToken)
       console.log(" response " , response)
       dispatch(loginSuccess(response))
 

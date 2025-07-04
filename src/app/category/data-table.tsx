@@ -101,6 +101,11 @@ import {
   TabsContent,
 
 } from "@/components/ui/tabs"
+import { useSelector } from "react-redux"
+import { useState } from "react"
+import { RootState } from "../store/store"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { deleteCategory } from "@/lib/api/category"
 
 export const schema = z.object({
   id: z.string(),
@@ -110,8 +115,147 @@ export const schema = z.object({
 })
 
 
+export interface CreateCategoryRequest {
+  name: string;
+  nameTranslations: Record<string, string>;
+  description: string;
+  parentCategory?: string;
+  icon: string;
+  isActive?: boolean;
+  createdBy: string;
+}
 
+export default function CreateSection() {
+  const user = useSelector((state: RootState) => state.user);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState<CreateCategoryRequest>({
+    name: "",
+    nameTranslations: {},
+    description: "",
+    parentCategory: "",
+    icon: "",
+    isActive: true,
+    createdBy: user?.user?._id ?? "",
+  });
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleTranslationChange = (lang: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      nameTranslations: {
+        ...prev.nameTranslations,
+        [lang]: value,
+      },
+    }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("http://localhost:3000/api/category", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) throw new Error("Failed to create category");
+
+      toast.success("Category created successfully");
+      setFormData({
+        name: "",
+        nameTranslations: {},
+        description: "",
+     
+        icon: "",
+        isActive: true,
+        createdBy: user?.user?._id ?? "",
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create category");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm">
+            <IconPlus />
+            <span className="hidden lg:inline">Add Category</span>
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add a New Category</DialogTitle>
+            <DialogDescription>
+              Fill in the information below to create a new category.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Name</Label>
+              <input name="name" className="w-full border rounded px-2 py-1" value={formData.name} onChange={handleChange} placeholder="Enter name" />
+            </div>
+            <div>
+              <Label>Translations</Label>
+              <div className="flex flex-col gap-2">
+                <input
+                  className="w-full border rounded px-2 py-1"
+                  placeholder="English Name"
+                  value={formData.nameTranslations.en || ""}
+                  onChange={(e) => handleTranslationChange("en", e.target.value)}
+                />
+                <input
+                  className="w-full border rounded px-2 py-1"
+                  placeholder="Amharic Name"
+                  value={formData.nameTranslations.am || ""}
+                  onChange={(e) => handleTranslationChange("am", e.target.value)}
+                />
+                 <input
+                  className="w-full border rounded px-2 py-1"
+                  placeholder="Oromifa Translation"
+                  value={formData.nameTranslations.om || ""}
+                  onChange={(e) => handleTranslationChange("om", e.target.value)}
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Description</Label>
+              <textarea name="description" className="w-full border rounded px-2 py-1" value={formData.description} onChange={handleChange} placeholder="Category description" />
+            </div>
+         
+            {/* <div>
+              <Label>Icon</Label>
+              <input name="icon" className="w-full border rounded px-2 py-1" value={formData.icon} onChange={handleChange} placeholder="Icon class or URL" />
+            </div> */}
+          </div>
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="secondary">Cancel</Button>
+            </DialogClose>
+            <Button onClick={handleSubmit} disabled={loading}>
+              {loading ? "Saving..." : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
 function DragHandle({ id }: { id: string }) {
   const { attributes, listeners } = useSortable({
     id,
@@ -200,7 +344,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
 
   {
     id: "actions",
-    cell: () => (
+    cell: ({row}) => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -213,11 +357,16 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Make a copy</DropdownMenuItem>
-          <DropdownMenuItem>Favorite</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+          
+          <DropdownMenuItem variant="destructive" onClick={()=>{
+             deleteCategory(row.original.id)
+             .then(() => {
+               toast.success("Category deleted successfully");
+             })
+             .catch((err) => {
+               toast.error("Category to delete event");
+             });
+          }}>Delete</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     ),
@@ -336,13 +485,7 @@ export function DataTable({ data: initialData, }: { data: z.infer<typeof schema>
         </Select>
 
         <div></div>
-        <div className="flex items-center gap-2">
-
-          <Button variant="outline" size="sm">
-            <IconPlus />
-            <span className="hidden lg:inline">Add Section</span>
-          </Button>
-        </div>
+        <CreateSection/>
       </div>
       <TabsContent
         value="outline"

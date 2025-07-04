@@ -54,23 +54,9 @@ import { z } from "zod"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
+
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -101,13 +87,141 @@ import {
   TabsContent,
 
 } from "@/components/ui/tabs"
-
+import { deleteRole } from "@/lib/api/roles"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 export const schema = z.object({
   id: z.string(),
   name: z.string(),
   permissions: z.string(),
 
 })
+export interface CreateRoleRequest {
+  name: string;
+  permissions?: string[];
+}
+
+export default function CreateSection() {
+  const [loading, setLoading] = React.useState(false);
+  const [formData, setFormData] = React.useState<CreateRoleRequest>({
+    name: "",
+    permissions: [],
+  });
+
+  const availablePermissions = [
+    "read",
+    "write",
+    "delete",
+    "manage_users",
+    "manage_roles",
+  ];
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handlePermissionChange = (perm: string) => {
+    setFormData((prev) => {
+      const hasPermission = prev.permissions?.includes(perm);
+      return {
+        ...prev,
+        permissions: hasPermission
+          ? prev.permissions?.filter((p) => p !== perm)
+          : [...(prev.permissions ?? []), perm],
+      };
+    });
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("http://localhost:3000/api/role", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) throw new Error("Failed to create role");
+
+      toast.success("Role created successfully");
+      setFormData({
+        name: "",
+        permissions: [],
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create role");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm">
+            + Create Role
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Create a New Role</DialogTitle>
+            <DialogDescription>
+              Define the role name and assign permissions.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Role Name</Label>
+              <Input
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="e.g., Admin"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Permissions</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {availablePermissions.map((perm) => (
+                  <div key={perm} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={perm}
+                      checked={formData.permissions?.includes(perm)}
+                      onCheckedChange={() => handlePermissionChange(perm)}
+                    />
+                    <Label htmlFor={perm}>{perm}</Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Button onClick={handleSubmit} disabled={loading} className="w-full">
+              {loading ? "Creating..." : "Create Role"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
 
 
 function DragHandle({ id }: { id: string }) {
@@ -196,7 +310,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
 
   {
     id: "actions",
-    cell: () => (
+    cell: ({row}) => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -209,11 +323,16 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Make a copy</DropdownMenuItem>
-          <DropdownMenuItem>Favorite</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+        
+          <DropdownMenuItem variant="destructive" onClick={()=>{
+            deleteRole(row.original.id)
+            .then(() => {
+              toast.success("Role deleted successfully");
+            })
+            .catch((err) => {
+              toast.error("Role to delete event");
+            });
+          }}>Delete</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     ),
@@ -332,13 +451,7 @@ export function DataTable({ data: initialData, }: { data: z.infer<typeof schema>
         </Select>
 
         <div></div>
-        <div className="flex items-center gap-2">
-
-          <Button variant="outline" size="sm">
-            <IconPlus />
-            <span className="hidden lg:inline">Add Section</span>
-          </Button>
-        </div>
+        <CreateSection/>
       </div>
       <TabsContent
         value="outline"

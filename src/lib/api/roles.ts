@@ -22,6 +22,28 @@ interface ApiError {
     statusCode: number;
 }
 
+export const deleteRole = async(id : string)  => {
+    try {
+        const response = await fetch(
+            `http://localhost:3000/api/role/${id}`,
+            {
+                method : 'DELETE',
+                headers : {
+                    'Content-Type' : 'application/json'
+                }
+            }
+        )
+
+        if (!response.ok){
+            const errorData : ApiError = await response.json();
+            throw new Error(errorData.message || 'deleting role failed')
+        }
+    } catch (error) {
+        console.error('Get role error:', error);
+        throw error;
+    }
+}
+
 export const getRoles = async (request: GetRolesRequest): Promise<RoleListResponse> => {
     try {
         const { page, limit } = request;

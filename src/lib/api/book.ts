@@ -20,6 +20,29 @@ interface ApiError {
     statusCode: number;
 }
 
+
+export const deleteBook = async(id : string)  => {
+    try {
+        const response = await fetch(
+            `http://localhost:3000/api/book/${id}`,
+            {
+                method : 'DELETE',
+                headers : {
+                    'Content-Type' : 'application/json'
+                }
+            }
+        )
+
+        if (!response.ok){
+            const errorData : ApiError = await response.json();
+            throw new Error(errorData.message || 'deleting book failed')
+        }
+    } catch (error) {
+        console.error('Get book error:', error);
+        throw error;
+    }
+}
+
 export const getBooks = async (request: GetBooksRequest): Promise<BookListResponse> => {
     try {
         const params = new URLSearchParams();
