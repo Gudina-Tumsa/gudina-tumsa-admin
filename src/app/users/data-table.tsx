@@ -101,7 +101,17 @@ import {
   TabsContent,
 
 } from "@/components/ui/tabs"
+import { useEffect, useState } from "react"
+import { getRoles } from "@/lib/api/roles"
 
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 export const schema = z.object({
   id: z.string(),
   firstName: z.string(),
@@ -114,7 +124,132 @@ export const schema = z.object({
 
 })
 
+interface Role {
+  id: string;
+  name: string;
+}
 
+export default function CreateUserSection() {
+  const [loading, setLoading] = useState(false);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    username: "",
+    phone: "",
+    password: "",
+    role: ""
+   
+  });
+
+  useEffect(() => {
+    getRoles({page : 1 , limit :100})
+      .then((res) => {
+        const _roles: Role[] = res.data?.roles.map((r: any) => ({ id: r._id, name: r.name })) || [];
+        setRoles(_roles);
+      })
+      .catch(() => toast.error("Failed to load roles"));
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.username || !formData.password || !formData.role) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const payload = {
+        ...formData,
+        // readingPreferences: formData.readingPreferences.split(",").map((pref) => pref.trim()).filter(Boolean),
+      };
+
+      const res = await fetch("http://localhost:3000/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error("User creation failed");
+      toast.success("User created successfully");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to create user");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm">
+            + Create User
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Create a New User</DialogTitle>
+            <DialogDescription>Fill in user details to create a new account.</DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-4">
+            <Label>First Name</Label>
+            <Input name="firstName" value={formData.firstName} onChange={handleChange} />
+
+            <Label>Last Name</Label>
+            <Input name="lastName" value={formData.lastName} onChange={handleChange} />
+
+            <Label>Email</Label>
+            <Input name="email" value={formData.email} onChange={handleChange} type="email" />
+
+            <Label>Username</Label>
+            <Input name="username" value={formData.username} onChange={handleChange} />
+
+            <Label>Password</Label>
+            <Input name="password" value={formData.password} onChange={handleChange} type="password" />
+
+            <Label>Phone (optional)</Label>
+            <Input name="phone" value={formData.phone} onChange={handleChange} />
+
+            <Label>Role</Label>
+            <Select
+              value={formData.role}
+              onValueChange={(value) => setFormData((prev) => ({ ...prev, role: value }))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a role" />
+              </SelectTrigger>
+              <SelectContent>
+                {roles.map((role) => (
+                  <SelectItem key={role.id} value={role.id}>
+                    {role.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+          
+
+            <Button onClick={handleSubmit} disabled={loading} className="w-full">
+              {loading ? "Creating..." : "Create User"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
 
 function DragHandle({ id }: { id: string }) {
   const { attributes, listeners } = useSortable({
@@ -376,13 +511,7 @@ export function DataTable({ data: initialData, }: { data: z.infer<typeof schema>
         </Select>
 
         <div></div>
-        <div className="flex items-center gap-2">
-
-          <Button variant="outline" size="sm">
-            <IconPlus />
-            <span className="hidden lg:inline">Add Section</span>
-          </Button>
-        </div>
+        <CreateUserSection/>
       </div>
       <TabsContent
         value="outline"
