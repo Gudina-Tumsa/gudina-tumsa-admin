@@ -80,3 +80,32 @@ export const getEvents = async (request: GetEventsRequest): Promise<EventListRes
         throw error;
     }
 }
+
+export const updateEventApi = async (updatedEvent: z.infer<typeof schema>)=> {
+
+    try {
+        const response = await fetch(`http://localhost:3000/api/events/${updatedEvent.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title: updatedEvent.title,
+                location: updatedEvent.location,
+                startDate: updatedEvent.startDate,
+                endDate: updatedEvent.endDate,
+                // Include other fields as needed
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to update event');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error updating event:', error);
+        throw error;
+    }
+}

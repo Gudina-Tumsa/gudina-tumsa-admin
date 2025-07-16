@@ -70,3 +70,30 @@ export const getRoles = async (request: GetRolesRequest): Promise<RoleListRespon
         throw error;
     }
 }
+
+
+export const updateRoleApi = async (updatedEvent: z.infer<typeof schema>)=> {
+
+    try {
+        const response = await fetch(`http://localhost:3000/api/role/${updatedEvent.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: updatedEvent.name,
+
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to update role');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error updating role:', error);
+        throw error;
+    }
+}

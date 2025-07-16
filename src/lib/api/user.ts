@@ -108,3 +108,25 @@ export const getUsers = async (request: GetUsersRequset): Promise<PaginatedUsers
         throw error;
     }
 };
+
+export const deleteUser = async(id : string)  => {
+    try {
+        const response = await fetch(
+            `http://localhost:3000/api/users/${id}`,
+            {
+                method : 'DELETE',
+                headers : {
+                    'Content-Type' : 'application/json'
+                }
+            }
+        )
+
+        if (!response.ok){
+            const errorData : ApiError = await response.json();
+            throw new Error(errorData.message || 'deleting user failed')
+        }
+    } catch (error) {
+        console.error('Get user error:', error);
+        throw error;
+    }
+}

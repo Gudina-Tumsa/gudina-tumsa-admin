@@ -48,7 +48,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
-import { toast } from "sonner"
+import toast from "react-hot-toast"
 import { z } from "zod"
 
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -103,7 +103,7 @@ import {
 } from "@/components/ui/tabs"
 import { useEffect, useState } from "react"
 import { getRoles } from "@/lib/api/roles"
-
+import {deleteUser , updateUser , UpdateUserRequest} from "@/lib/api/user"
 import {
   Dialog,
   DialogTrigger,
@@ -128,6 +128,101 @@ interface Role {
   id: string;
   name: string;
 }
+
+interface EditFormProps {
+  event: z.infer<typeof schema>
+  onSave: (updatedEvent: z.infer<typeof schema>) => void
+  onCancel: () => void
+}
+
+const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
+  const [editedEvent, setEditedEvent] = React.useState(event)
+  const [password, setPassword] = React.useState('')
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    if (name === 'password') {
+      setPassword(value) // update password separately
+    } else {
+      setEditedEvent(prev => ({
+        ...prev,
+        [name]: value
+      }))
+    }
+  }
+  const handleSaveClick = () => {
+    // Combine editedEvent and password when calling onSave
+    onSave({
+      ...editedEvent,
+      password, // include password (could be empty)
+    })
+  }
+  return (
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="firstName">First Name</Label>
+          <Input
+              id="firstName"
+              name="firstName"
+              value={editedEvent.firstName}
+              onChange={handleChange}
+          />
+        </div>
+        <div>
+          <Label htmlFor="lastName">Last Name</Label>
+          <Input
+              id="lastName"
+              name="lastName"
+              value={editedEvent.lastName}
+              onChange={handleChange}
+          />
+        </div>
+        <div>
+          <Label htmlFor="email">Email</Label>
+          <Input
+              id="email"
+              name="email"
+              value={editedEvent.email}
+              onChange={handleChange}
+          />
+        </div>
+        <div>
+          <Label htmlFor="username">Username</Label>
+          <Input
+              id="username"
+              name="username"
+              value={editedEvent.username}
+              onChange={handleChange}
+          />
+        </div>
+        <div>
+          <Label htmlFor="phone">Phone</Label>
+          <Input
+              id="phone"
+              name="phone"
+              value={editedEvent.phone}
+              onChange={handleChange}
+          />
+        </div>
+        <div>
+          <Label htmlFor="password">Password</Label>
+          <Input
+              id="password"
+              name="password"
+              type="password"
+              value={password}
+              onChange={handleChange}
+          />
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button onClick={handleSaveClick}>Save</Button>
+        </div>
+      </div>
+  )
+}
+
 
 export default function CreateUserSection() {
   const [loading, setLoading] = useState(false);
@@ -375,27 +470,83 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
 
   {
     id: "actions",
-    cell: () => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-            size="icon"
-          >
-            <IconDotsVertical />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Make a copy</DropdownMenuItem>
-          <DropdownMenuItem>Favorite</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
+    cell: ({row}) => {
+      const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false)
+
+      const handleDelete = () => {
+        deleteUser(row.original.id)
+            .then(() => {
+              toast.success("User deleted successfully")
+            })
+            .catch((err) => {
+              toast.error("Failed to delete User")
+            })
+
+      }
+
+      const handleSave = (updatedEvent: z.infer<typeof schema> , updatedPassowrd) => {
+
+        const values: UpdateUserRequest = {
+          firstName: updatedEvent.firstName,
+          lastName: updatedEvent.lastName,
+          email: updatedEvent.email,
+          username: updatedEvent.username,
+          phone: updatedEvent.phone,
+        }
+        
+        if (updatedPassowrd && updatedPassowrd.trim() !== "") {
+          values.password = updatedPassowrd
+        }
+        updateUser(values , row.original.id)
+            .then(() => {
+              toast.success("Role updated successfully")
+              setIsEditDialogOpen(false)
+            })
+            .catch((err) => {
+              toast.error("Failed to update role")
+            })
+
+      }
+      return (
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                    variant="ghost"
+                    className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+                    size="icon"
+                >
+                  <IconDotsVertical />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-32">
+                <DialogTrigger asChild>
+                  <DropdownMenuItem>Edit</DropdownMenuItem>
+                </DialogTrigger>
+                <DropdownMenuItem variant="destructive" onClick={handleDelete}>
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit Role</DialogTitle>
+                <DialogDescription>
+                  Make changes to the event here. Click save when you're done.
+                </DialogDescription>
+              </DialogHeader>
+              <EditForm
+                  event={row.original}
+                  onSave={handleSave}
+                  onCancel={() => setIsEditDialogOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
+      )
+      
+    },
   },
 ]
 

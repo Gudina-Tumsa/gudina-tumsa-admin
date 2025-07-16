@@ -58,3 +58,32 @@ export const getCategories = async (request: GetCategoriesRequest): Promise<Cate
         throw error;
     }
 };
+
+
+export const updateCategoryApi = async (updateCategory: z.infer<typeof schema>)=> {
+
+    try {
+        const response = await fetch(`http://localhost:3000/api/category/${updateCategory.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: updateCategory.name,
+                nameTranslations: updateCategory.nameTranslations,
+                description: updateCategory.description,
+
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to update category');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error updating category:', error);
+        throw error;
+    }
+}

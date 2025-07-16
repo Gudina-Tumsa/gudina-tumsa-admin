@@ -19,6 +19,7 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
+import toast from "react-hot-toast"
 import { CSS } from "@dnd-kit/utilities"
 import {
   IconChevronLeft,
@@ -48,7 +49,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
-import { toast } from "sonner"
+
 import { z } from "zod"
 
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -105,12 +106,12 @@ import { useSelector } from "react-redux"
 import { useState } from "react"
 import { RootState } from "../store/store"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { deleteCategory } from "@/lib/api/category"
+import { deleteCategory , updateCategoryApi } from "@/lib/api/category"
 
 export const schema = z.object({
   id: z.string(),
   name: z.string(),
-  nameTranslations: z.string(),
+  nameTranslations: z.record(z.string()),
   description: z.string(),
 })
 
@@ -124,6 +125,113 @@ export interface CreateCategoryRequest {
   isActive?: boolean;
   createdBy: string;
 }
+
+
+
+interface EditFormProps {
+  event: z.infer<typeof schema>
+  onSave: (updatedEvent: z.infer<typeof schema>) => void
+  onCancel: () => void
+}
+
+const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
+  const [editedEvent, setEditedEvent] = useState({
+    ...event,
+    nameTranslations: typeof event.nameTranslations === 'string'
+        ? event.nameTranslations
+        : JSON.stringify(event.nameTranslations || {}, null, 2)
+  });
+
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setEditedEvent(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSave = () => {
+    try {
+      // Parse nameTranslations back to object if it's a string
+      const updatedEvent = {
+        ...editedEvent,
+        nameTranslations: editedEvent.nameTranslations
+            ? JSON.parse(editedEvent.nameTranslations)
+            : {}
+      };
+      onSave(updatedEvent);
+    } catch (error) {
+      toast.error("Invalid JSON in name translations");
+    }
+  };
+
+  return (
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="name">Name</Label>
+          <Input
+              id="name"
+              name="name"
+              value={editedEvent.name}
+              onChange={handleChange}
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="nameTranslations">Name Translations</Label>
+          <div className="relative">
+          <textarea
+              id="nameTranslations"
+              name="nameTranslations"
+              value={editedEvent.nameTranslations}
+              onChange={handleChange}
+              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[100px] font-mono text-sm"
+          />
+            {editedEvent.nameTranslations && (
+                <div className="absolute right-2 top-2">
+                  <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        try {
+                          const parsed = JSON.parse(editedEvent.nameTranslations);
+
+                          setEditedEvent(prev => ({
+                            ...prev,
+                            nameTranslations: JSON.stringify(parsed, null, 2)
+                          }));
+                        } catch {
+                          toast.error("Invalid JSON format");
+                        }
+                      }}
+                  >
+                    Format JSON
+                  </Button>
+                </div>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="description">Description</Label>
+          <Input
+              id="description"
+              name="description"
+              value={editedEvent.description}
+              onChange={handleChange}
+          />
+        </div>
+
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button onClick={handleSave}>Save</Button>
+        </div>
+      </div>
+  );
+};
 
 export default function CreateSection() {
   const user = useSelector((state: RootState) => state.user);
@@ -174,7 +282,7 @@ export default function CreateSection() {
         name: "",
         nameTranslations: {},
         description: "",
-     
+
         icon: "",
         isActive: true,
         createdBy: user?.user?._id ?? "",
@@ -188,99 +296,76 @@ export default function CreateSection() {
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="outline" size="sm">
-            <IconPlus />
-            <span className="hidden lg:inline">Add Category</span>
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add a New Category</DialogTitle>
-            <DialogDescription>
-              Fill in the information below to create a new category.
-            </DialogDescription>
-          </DialogHeader>
+      <div className="flex items-center gap-2">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm">
+              <IconPlus />
+              <span className="hidden lg:inline">Add Category</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add a New Category</DialogTitle>
+              <DialogDescription>
+                Fill in the information below to create a new category.
+              </DialogDescription>
+            </DialogHeader>
 
-          <div className="space-y-4 py-4">
-            <div>
-              <Label>Name</Label>
-              <input name="name" className="w-full border rounded px-2 py-1" value={formData.name} onChange={handleChange} placeholder="Enter name" />
-            </div>
-            <div>
-              <Label>Translations</Label>
-              <div className="flex flex-col gap-2">
-                <input
-                  className="w-full border rounded px-2 py-1"
-                  placeholder="English Name"
-                  value={formData.nameTranslations.en || ""}
-                  onChange={(e) => handleTranslationChange("en", e.target.value)}
-                />
-                <input
-                  className="w-full border rounded px-2 py-1"
-                  placeholder="Amharic Name"
-                  value={formData.nameTranslations.am || ""}
-                  onChange={(e) => handleTranslationChange("am", e.target.value)}
-                />
-                 <input
-                  className="w-full border rounded px-2 py-1"
-                  placeholder="Oromifa Translation"
-                  value={formData.nameTranslations.om || ""}
-                  onChange={(e) => handleTranslationChange("om", e.target.value)}
-                />
+            <div className="space-y-4 py-4">
+              <div>
+                <Label>Name</Label>
+                <input name="name" className="w-full border rounded px-2 py-1" value={formData.name} onChange={handleChange} placeholder="Enter name" />
               </div>
-            </div>
-            <div>
-              <Label>Description</Label>
-              <textarea name="description" className="w-full border rounded px-2 py-1" value={formData.description} onChange={handleChange} placeholder="Category description" />
-            </div>
-         
-            {/* <div>
+              <div>
+                <Label>Translations</Label>
+                <div className="flex flex-col gap-2">
+                  <input
+                      className="w-full border rounded px-2 py-1"
+                      placeholder="English Name"
+                      value={formData.nameTranslations.en || ""}
+                      onChange={(e) => handleTranslationChange("en", e.target.value)}
+                  />
+                  <input
+                      className="w-full border rounded px-2 py-1"
+                      placeholder="Amharic Name"
+                      value={formData.nameTranslations.am || ""}
+                      onChange={(e) => handleTranslationChange("am", e.target.value)}
+                  />
+                  <input
+                      className="w-full border rounded px-2 py-1"
+                      placeholder="Oromifa Translation"
+                      value={formData.nameTranslations.om || ""}
+                      onChange={(e) => handleTranslationChange("om", e.target.value)}
+                  />
+                </div>
+              </div>
+              <div>
+                <Label>Description</Label>
+                <textarea name="description" className="w-full border rounded px-2 py-1" value={formData.description} onChange={handleChange} placeholder="Category description" />
+              </div>
+
+              {/* <div>
               <Label>Icon</Label>
               <input name="icon" className="w-full border rounded px-2 py-1" value={formData.icon} onChange={handleChange} placeholder="Icon class or URL" />
             </div> */}
-          </div>
+            </div>
 
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancel</Button>
-            </DialogClose>
-            <Button onClick={handleSubmit} disabled={loading}>
-              {loading ? "Saving..." : "Save"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button type="button" variant="secondary">Cancel</Button>
+              </DialogClose>
+              <Button onClick={handleSubmit} disabled={loading}>
+                {loading ? "Saving..." : "Save"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
   );
 }
-function DragHandle({ id }: { id: string }) {
-  const { attributes, listeners } = useSortable({
-    id,
-  })
-
-  return (
-    <Button
-      {...attributes}
-      {...listeners}
-      variant="ghost"
-      size="icon"
-      className="text-muted-foreground size-7 hover:bg-transparent"
-    >
-      <IconGripVertical className="text-muted-foreground size-3" />
-      <span className="sr-only">Drag to reorder</span>
-    </Button>
-  )
-}
-
 const columns: ColumnDef<z.infer<typeof schema>>[] = [
-  {
-    id: "drag",
-    header: () => null,
-    cell: ({ row }) => <DragHandle id={row.original.id} />,
-  },
+
   {
     id: "select",
     header: ({ table }) => (
@@ -327,10 +412,26 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "nameTranslations",
-    header: "name translations",
-    cell: ({ row }) => (
-        <p>{row.original.nameTranslations}</p>
-    ),
+    header: "Translations",
+    cell: ({ row }) => {
+      const translations = row.original.nameTranslations
+      return (
+          <div className="max-w-[200px]">
+            {translations && Object.keys(translations).length > 0 ? (
+                <div className="space-y-1">
+                  {Object.entries(translations).map(([lang, text]) => (
+                      <div key={lang} className="flex gap-2 text-sm">
+                        <span className="font-medium">{lang}:</span>
+                        <span>{text}</span>
+                      </div>
+                  ))}
+                </div>
+            ) : (
+                <span className="text-muted-foreground">No translations</span>
+            )}
+          </div>
+      )
+    },
   },
   {
 
@@ -340,36 +441,79 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       <p>{row.original.description}</p>
     ),
   },
-  
+
 
   {
     id: "actions",
-    cell: ({row}) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-            size="icon"
-          >
-            <IconDotsVertical />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-32">
-          
-          <DropdownMenuItem variant="destructive" onClick={()=>{
-             deleteCategory(row.original.id)
-             .then(() => {
-               toast.success("Category deleted successfully");
-             })
-             .catch((err) => {
-               toast.error("Category to delete event");
-             });
-          }}>Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
+    cell: ({row}) => {
+      const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+
+
+      const handleSave = (updatedEvent: z.infer<typeof schema>) => {
+        updateCategoryApi(updatedEvent)
+            .then(() => {
+              toast.success("Category updated successfully")
+              setIsEditDialogOpen(false)
+            })
+            .catch((err) => {
+              toast.error("Failed to update event")
+            })
+        console.log("asdf")
+        console.log(updatedEvent)
+
+      }
+
+      const handleDelete = () => {
+        deleteCategory(row.original.id)
+            .then(() => {
+              toast.success("Category deleted successfully");
+            })
+            .catch((err) => {
+              toast.error("Category to delete event");
+            });
+      }
+
+
+      return(
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                    variant="ghost"
+                    className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+                    size="icon"
+                >
+                  <IconDotsVertical />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-32">
+                <DialogTrigger asChild>
+                  <DropdownMenuItem>Edit</DropdownMenuItem>
+                </DialogTrigger>
+                <DropdownMenuItem variant="destructive" onClick={handleDelete}>
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit Category</DialogTitle>
+                <DialogDescription>
+                  Make changes to the event here. Click save when you're done.
+                </DialogDescription>
+              </DialogHeader>
+              <EditForm
+                  event={row.original}
+                  onSave={handleSave}
+                  onCancel={() => setIsEditDialogOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
+
+      )
+    },
   },
 ]
 

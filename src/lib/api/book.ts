@@ -80,3 +80,36 @@ export const getBooks = async (request: GetBooksRequest): Promise<BookListRespon
         throw error;
     }
 };
+
+
+export const updateBook = async (updateBook: z.infer<typeof schema>)=> {
+
+    try {
+        const response = await fetch(`http://localhost:3000/api/book/${updateBook.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title: updateBook.title,
+                isbn: updateBook.isbn,
+                publicationYear: updateBook.publicationYear,
+                language: updateBook.language,
+                description: updateBook.description,
+                author : updateBook.author,
+                pageCount : updateBook.pageCount
+                
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to update book');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error updating book:', error);
+        throw error;
+    }
+}

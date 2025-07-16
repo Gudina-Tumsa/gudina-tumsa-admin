@@ -90,7 +90,7 @@ import {
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { deleteBook } from "@/lib/api/book"
+import { deleteBook , updateBook } from "@/lib/api/book"
 import { getCategories } from "@/lib/api/category"
 
 export const schema = z.object({
@@ -105,6 +105,109 @@ export const schema = z.object({
   pageCount : z.string()
 
 })
+
+interface EditFormProps {
+  event: z.infer<typeof schema>
+  onSave: (updatedEvent: z.infer<typeof schema>) => void
+  onCancel: () => void
+}
+
+const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
+  const [editedEvent, setEditedEvent] = React.useState(event)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setEditedEvent(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  return (
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="title">Title</Label>
+          <Input
+              id="title"
+              name="title"
+              value={editedEvent.title ?? ''}
+              onChange={handleChange}
+          />
+        </div>
+        <div>
+          <Label htmlFor="author">Author</Label>
+          <Input
+              id="author"
+              name="author"
+              value={editedEvent.author ?? ''}
+              onChange={handleChange}
+          />
+        </div>
+        <div>
+          <Label htmlFor="description">Description</Label>
+          <Input
+              id="description"
+              name="description"
+              value={editedEvent.description ?? ''}
+              onChange={handleChange}
+          />
+        </div>
+        <div>
+          <Label htmlFor="publisher">Language</Label>
+          <Input
+              id="language"
+              name="language"
+              value={editedEvent.language ?? ''}
+              onChange={handleChange}
+          />
+        </div>
+        <div>
+          <Label htmlFor="publicationYear">Publication Year</Label>
+          <Input
+              id="publicationYear"
+              name="publicationYear"
+              type="number"
+              value={editedEvent.publicationYear?.toString() ?? ''}
+              onChange={handleChange}
+          />
+        </div>
+        <div>
+          <Label htmlFor="isbn">ISBN</Label>
+          <Input
+              id="isbn"
+              name="isbn"
+              value={editedEvent.isbn ?? ''}
+              onChange={handleChange}
+          />
+        </div>
+        <div>
+          <Label htmlFor="pageCount">Page Count</Label>
+          <Input
+              id="pageCount"
+              name="pageCount"
+              value={editedEvent.pageCount ?? ''}
+              onChange={handleChange}
+          />
+        </div>
+
+        <div className="flex gap-2">
+          <button
+              className="px-4 py-2 bg-blue-600 text-white rounded"
+              onClick={() => onSave(editedEvent)}
+          >
+            Save
+          </button>
+          <button
+              className="px-4 py-2 bg-gray-300 text-black rounded"
+              onClick={onCancel}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+  )
+}
+
 
 export default function CreateBookSection() {
 
@@ -395,32 +498,71 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
 
   {
     id: "actions",
-    cell: ({row}) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-            size="icon"
-          >
-            <IconDotsVertical />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-32">
-        
-          <DropdownMenuItem variant="destructive" onClick={()=>{
-             deleteBook(row.original.id)
-             .then(() => {
-               toast.success("book deleted successfully");
-             })
-             .catch((err) => {
-               toast.error("book to delete event");
-             });
-          }}>Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
+    cell: ({row}) => {
+      const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+
+      const handleDelete = () => {
+        deleteBook(row.original.id)
+            .then(() => {
+              toast.success("book deleted successfully");
+            })
+            .catch((err) => {
+              toast.error("book to delete event");
+            });
+      }
+
+      const handleSave = (updatedEvent: z.infer<typeof schema>) => {
+        updateBook(updatedEvent)
+            .then(() => {
+              toast.success("Event updated successfully")
+              setIsEditDialogOpen(false)
+            })
+            .catch((err) => {
+              toast.error("Failed to update event")
+            })
+
+      }
+
+      return (
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                    variant="ghost"
+                    className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+                    size="icon"
+                >
+                  <IconDotsVertical />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-32">
+                <DialogTrigger asChild>
+                  <DropdownMenuItem>Edit</DropdownMenuItem>
+                </DialogTrigger>
+                <DropdownMenuItem variant="destructive" onClick={handleDelete}>
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit Book</DialogTitle>
+                <DialogDescription>
+                  Make changes to the event here. Click save when you're done.
+                </DialogDescription>
+              </DialogHeader>
+              <EditForm
+                  event={row.original}
+                  onSave={handleSave}
+                  onCancel={() => setIsEditDialogOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
+      )
+    }
+
   },
 ]
 
