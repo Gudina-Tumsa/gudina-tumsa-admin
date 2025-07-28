@@ -92,6 +92,9 @@ import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { deleteBook , updateBook } from "@/lib/api/book"
 import { getCategories } from "@/lib/api/category"
+import userSlice from "@/app/store/features/userSlice";
+import {useSelector} from "react-redux";
+import {RootState} from "@/app/store/store";
 
 export const schema = z.object({
   id: z.string(),
@@ -217,25 +220,25 @@ export default function CreateBookSection() {
   }
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<CategoryInterface[]>([]);
-
+  const user = useSelector((state: RootState) => state.user)
   const [formData, setFormData] = useState({
     title: "",
     author: "",
     isbn: "",
     description: "",
     publisher: "",
-    publicationYear: "2023",
+    publicationYear: "",
     language: "en",
     category: "", // category ID
-    tags: ["ai"],
-    titleTranslations: { am: "የመጀመሪያዬ መፅሐፍ" },
-    authorTranslations: { am: "ጄን ዶ" },
-    descriptionTranslations: { am: "ይህ ምሳሌ መግለጫ ነው" },
-    pageCount: 300,
-    uploadDate: "2024-01-01T00:00:00.000Z",
-    uploadedBy: "685af4d0d64d5854fe34f20b", // user ID
+    tags: [],
+    titleTranslations: {},
+    authorTranslations: { },
+    descriptionTranslations: { },
+    pageCount: 0,
+    uploadDate: new Date(),
+    uploadedBy: user.user?._id,
     isActive: true,
-    metadata: { genre: "Sci-Fi", level: "Intermediate" },
+    metadata: {  },
   });
 
   const [bookFile, setBookFile] = useState<File | null>(null);
@@ -290,14 +293,15 @@ export default function CreateBookSection() {
 
   useEffect(() => {
     getCategories({ page: 1, limit: 100 })
-      .then((res) =>{
-        let _categories : CategoryInterface[] = []
-        res.data?.categories.map((data)=>{
-          categories.push({id : data._id , name : data.name})
+        .then((res) => {
+          const _categories: CategoryInterface[] = res.data?.categories.map((data: any) => ({
+            id: data._id,
+            name: data.name,
+          })) || [];
+
+          setCategories(_categories);
         })
-        setCategories(_categories)
-      })
-      .catch(() => toast.error("Failed to load categories"));
+        .catch(() => toast.error("Failed to load categories"));
   }, []);
 
   return (
@@ -321,6 +325,8 @@ export default function CreateBookSection() {
             <Label>Author</Label>
             <Input name="author" value={formData.author} onChange={handleInputChange} />
 
+
+
             <Label>ISBN</Label>
             <Input name="isbn" value={formData.isbn} onChange={handleInputChange} />
 
@@ -329,6 +335,11 @@ export default function CreateBookSection() {
 
             <Label>Publisher</Label>
             <Input name="publisher" value={formData.publisher} onChange={handleInputChange} />
+
+
+            <Label>Publication Year</Label>
+            <Input name="publicationYear" value={formData.publicationYear} onChange={handleInputChange} />
+
 
             <Label>Category</Label>
             <Select
@@ -339,11 +350,15 @@ export default function CreateBookSection() {
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </SelectItem>
-                ))}
+                {categories.map((cat) => {
+                  console.log(cat)
+                  return (
+
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </SelectItem>
+                  )
+                })}
               </SelectContent>
             </Select>
 
@@ -352,6 +367,9 @@ export default function CreateBookSection() {
 
             <Label>Cover Image (PNG/JPEG)</Label>
             <Input type="file" accept="image/*" onChange={(e) => setCoverImage(e.target.files?.[0] ?? null)} />
+
+            <Label>page count</Label>
+            <Input name="pageCount" value={formData.pageCount} onChange={handleInputChange} />
 
             <div className="flex items-center space-x-2 pt-2">
               <Checkbox

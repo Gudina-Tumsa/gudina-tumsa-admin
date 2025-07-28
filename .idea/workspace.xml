@@ -6,9 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="67eed5a9-951b-456d-95bc-1d33572a83ba" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/chart-area-interactive.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/chart-area-interactive.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/section-cards.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/section-cards.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/site-header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/site-header.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/books/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/books/data-table.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/books/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/books/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/app-sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/app-sidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/api/book.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/book.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,7 +122,7 @@
       <workItem from="1752647950395" duration="14734000" />
       <workItem from="1752668276760" duration="6391000" />
       <workItem from="1753646609729" duration="604000" />
-      <workItem from="1753679160915" duration="3328000" />
+      <workItem from="1753679160915" duration="6156000" />
     </task>
     <servers />
   </component>

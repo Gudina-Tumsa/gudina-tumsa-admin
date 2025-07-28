@@ -7,7 +7,8 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar"
 import {getBooks} from "./../../lib/api/book"
-import data from "./data.json"
+
+
 interface BookInterface {
   "id": string;
   "title": string;
@@ -22,7 +23,7 @@ interface BookInterface {
 }
 export default function Page() {
   const [books , setBooks] = useState<BookInterface[]>([])
-
+  const [loading, setLoading] = useState(true)
   useEffect(() => {
     getBooks({page : 1 , limit :  20}).then((data)=>{
       let bookCollection : BookInterface[] = []
@@ -44,7 +45,7 @@ export default function Page() {
       setBooks(bookCollection)
     }).catch((err : unknown)=>{
       console.log(err)
-    })
+    }).finally(() => setLoading(false))
   }, []);
   return (
     <SidebarProvider
@@ -62,11 +63,10 @@ export default function Page() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
 
-
-              {books.length > 0 ? (
-                  <DataTable data={books} />
+              {loading ? (
+                  <div className="text-center text-muted">Loading events...</div>
               ) : (
-                  <div className="text-center text-muted">No users found or still loading...</div>
+                  <DataTable data={books} />
               )}
             </div>
           </div>

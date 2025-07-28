@@ -67,6 +67,7 @@ export const getBooks = async (request: GetBooksRequest): Promise<BookListRespon
                 'Content-Type': 'application/json',
             },
         });
+        console.log(response);
 
         if (!response.ok) {
             const errorData: ApiError = await response.json();
