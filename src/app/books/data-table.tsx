@@ -519,6 +519,38 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     cell: ({row}) => {
       const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 
+      const handleAudioSummarization = async () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "audio/*";
+
+        input.onchange = async () => {
+          const file = input.files?.[0];
+          if (!file) return;
+
+          const formData = new FormData();
+          formData.append("bookId", row.original.id); // Assuming this is the book ID
+          formData.append("audioFile", file);
+
+          try {
+            const response = await fetch("http://localhost:3000/api/book/upload-audio-summarization", {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!response.ok) {
+              throw new Error("Upload failed");
+            }
+
+            toast.success("Audio summarization uploaded successfully!");
+          } catch (err) {
+            toast.error("Failed to upload audio summarization");
+          }
+        };
+
+        input.click();
+      };
+
       const handleDelete = () => {
         deleteBook(row.original.id)
             .then(() => {
@@ -561,8 +593,13 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
                 <DropdownMenuItem variant="destructive" onClick={handleDelete}>
                   Delete
                 </DropdownMenuItem>
+                <DropdownMenuItem variant="destructive" onClick={handleAudioSummarization}>
+                  Upload Audio Summarization
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+
 
             <DialogContent>
               <DialogHeader>
@@ -577,6 +614,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
                   onCancel={() => setIsEditDialogOpen(false)}
               />
             </DialogContent>
+
+
+
           </Dialog>
       )
     }
