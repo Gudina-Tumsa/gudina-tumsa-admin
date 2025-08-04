@@ -12,7 +12,7 @@ interface ApiError {
 
 export const loginUser = async (credentials: LoginRequest): Promise<LoginResponse> => {
     try {
-        const response = await fetch(`http://localhost:3000/api/users/login`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ export const loginUser = async (credentials: LoginRequest): Promise<LoginRespons
 
 export const logout = async (userId : string , deviceId : string) => {
     try {
-        const response = await fetch(`http://localhost:3000/api/users/logout`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/logout`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

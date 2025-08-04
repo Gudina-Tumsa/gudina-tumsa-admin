@@ -13,7 +13,7 @@ interface ApiError {
 export const deleteCategory = async(id : string)  => {
     try {
         const response = await fetch(
-            `http://localhost:3000/api/category/${id}`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/category/${id}`,
             {
                 method : 'DELETE',
                 headers : {
@@ -37,7 +37,7 @@ export const getCategories = async (request: GetCategoriesRequest): Promise<Cate
         const { page, limit } = request;
 
         const response = await fetch(
-            `http://localhost:3000/api/category?page=${page}&limit=${limit}`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/category?page=${page}&limit=${limit}`,
             {
                 method: 'GET',
                 headers: {
@@ -63,7 +63,7 @@ export const getCategories = async (request: GetCategoriesRequest): Promise<Cate
 export const updateCategoryApi = async (updateCategory: z.infer<typeof schema>)=> {
 
     try {
-        const response = await fetch(`http://localhost:3000/api/category/${updateCategory.id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/category/${updateCategory.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

@@ -25,22 +25,28 @@ interface CategoryInterface {
 
 export default function Page() {
   const [categories, setCategories] = useState<CategoryInterface[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    getCategories({ page: 1, limit: 20 }).then((data) => {
-      const bookCollection: CategoryInterface[] = data?.data?.categories?.map((n) => ({
-        id: n._id,
-        name: n.name,
-        nameTranslations: typeof n.nameTranslations === 'string'
-            ? JSON.parse(n.nameTranslations)
-            : n.nameTranslations || {},
-        description: n.description,
-      })) || []
-      setCategories(bookCollection)
-    }).catch((err: unknown) => {
-      console.error("Error fetching categories:", err)
-    })
+    getCategories({ page: 1, limit: 20 })
+        .then((data) => {
+          const bookCollection: CategoryInterface[] = data?.data?.categories?.map((n) => ({
+            id: n._id,
+            name: n.name,
+            nameTranslations: typeof n.nameTranslations === 'string'
+                ? JSON.parse(n.nameTranslations)
+                : n.nameTranslations || {},
+            description: n.description,
+          })) || []
+          setCategories(bookCollection)
+        })
+        .catch((err: unknown) => {
+          console.error("Error fetching categories:", err)
+          setCategories([])
+        })
+        .finally(() => setLoading(false))
   }, [])
+
 
   return (
       <SidebarProvider
@@ -56,11 +62,12 @@ export default function Page() {
           <div className="flex flex-1 flex-col">
             <div className="@container/main flex flex-1 flex-col gap-2">
               <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-                {categories.length > 0 ? (
-                    <DataTable data={categories} />
-                ) : (
-                    <div className="text-center text-muted">No categories found or still loading...</div>
-                )}
+                  {loading ? (
+                      <div className="text-center text-muted">Loading events...</div>
+                  ) : (
+                      <DataTable data={categories} />
+                  )}
+
               </div>
             </div>
           </div>

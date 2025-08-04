@@ -24,7 +24,7 @@ interface ApiError {
 export const deleteBook = async(id : string)  => {
     try {
         const response = await fetch(
-            `http://localhost:3000/api/book/${id}`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/book/${id}`,
             {
                 method : 'DELETE',
                 headers : {
@@ -61,7 +61,7 @@ export const getBooks = async (request: GetBooksRequest): Promise<BookListRespon
         if (request.sort) params.append('sort', request.sort);
         if (request.savedByUser) params.append('savedByUser' , request.savedByUser)
 
-        const response = await fetch(`http://localhost:3000/api/book?${params.toString()}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book?${params.toString()}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ export const getBooks = async (request: GetBooksRequest): Promise<BookListRespon
 export const updateBook = async (updateBook: z.infer<typeof schema>)=> {
 
     try {
-        const response = await fetch(`http://localhost:3000/api/book/${updateBook.id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/${updateBook.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

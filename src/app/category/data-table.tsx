@@ -267,7 +267,7 @@ export default function CreateSection() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3000/api/category", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/category`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

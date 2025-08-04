@@ -73,7 +73,7 @@ export function ChartAreaInteractive() {
 
   useEffect(() => {
     let getChartData = () =>{
-      fetch("http://localhost:3000/api/stats/get-session-stat")
+      fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/stats/get-session-stat`)
           .then(res => res.json())
           .then((data : SessionStatsResponse)=>{
             setChartData(data.data)
@@ -82,14 +82,14 @@ export function ChartAreaInteractive() {
     }
     getChartData()
 
-  })
+  },[])
   React.useEffect(() => {
     if (isMobile) {
       setTimeRange("7d")
     }
   }, [isMobile])
 
-  const filteredData = chartData.filter((item:SessionStatsItem) => {
+  const filteredData = chartData?.filter((item:SessionStatsItem) => {
     const date = new Date(item.date)
     const referenceDate = new Date("2024-06-30")
     let daysToSubtract = 90

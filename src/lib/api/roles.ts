@@ -25,7 +25,7 @@ interface ApiError {
 export const deleteRole = async(id : string)  => {
     try {
         const response = await fetch(
-            `http://localhost:3000/api/role/${id}`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/role/${id}`,
             {
                 method : 'DELETE',
                 headers : {
@@ -49,7 +49,7 @@ export const getRoles = async (request: GetRolesRequest): Promise<RoleListRespon
         const { page, limit } = request;
 
         const response = await fetch(
-            `http://localhost:3000/api/role?page=${page}&limit=${limit}`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/role?page=${page}&limit=${limit}`,
             {
                 method: 'GET',
                 headers: {
@@ -75,7 +75,7 @@ export const getRoles = async (request: GetRolesRequest): Promise<RoleListRespon
 export const updateRoleApi = async (updatedEvent: z.infer<typeof schema>)=> {
 
     try {
-        const response = await fetch(`http://localhost:3000/api/role/${updatedEvent.id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/role/${updatedEvent.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

@@ -24,7 +24,7 @@ export function SectionCards() {
   }
   useEffect(() => {
     let getSystemInfo = () =>{
-      fetch("http://localhost:3000/api/stats/get-system-stats")
+      fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/stats/get-system-stats`)
           .then(res => res.json())
           .then((data : SystemStatResponse)=>{
               setTotalBooks(data.data.books)

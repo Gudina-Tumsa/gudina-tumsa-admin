@@ -17,7 +17,7 @@ interface ApiError {
 
 export const updateUser = async (request : UpdateUserRequest , id : string) => {
     try {
-        const response = await fetch(`http://localhost:3000/api/users/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ export const getUsers = async (request: GetUsersRequset): Promise<PaginatedUsers
         if (request.limit) params.append('limit', String(request.limit));
       
 
-        const response = await fetch(`http://localhost:3000/api/users?${params.toString()}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users?${params.toString()}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -112,7 +112,7 @@ export const getUsers = async (request: GetUsersRequset): Promise<PaginatedUsers
 export const deleteUser = async(id : string)  => {
     try {
         const response = await fetch(
-            `http://localhost:3000/api/users/${id}`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${id}`,
             {
                 method : 'DELETE',
                 headers : {

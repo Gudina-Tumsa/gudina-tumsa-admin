@@ -35,7 +35,7 @@ interface ApiError {
 export const deleteEvent = async(id : string)  => {
     try {
         const response = await fetch(
-            `http://localhost:3000/api/events/${id}`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/events/${id}`,
             {
                 method : 'DELETE',
                 headers : {
@@ -59,7 +59,7 @@ export const getEvents = async (request: GetEventsRequest): Promise<EventListRes
         const { page, limit } = request;
 
         const response = await fetch(
-            `http://localhost:3000/api/events?page=${page}&limit=${limit}`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/events?page=${page}&limit=${limit}`,
             {
                 method: 'GET',
                 headers: {
@@ -84,7 +84,7 @@ export const getEvents = async (request: GetEventsRequest): Promise<EventListRes
 export const updateEventApi = async (updatedEvent: z.infer<typeof schema>)=> {
 
     try {
-        const response = await fetch(`http://localhost:3000/api/events/${updatedEvent.id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/events/${updatedEvent.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

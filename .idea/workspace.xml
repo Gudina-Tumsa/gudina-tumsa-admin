@@ -6,7 +6,21 @@
   <component name="ChangeListManager">
     <list default="true" id="67eed5a9-951b-456d-95bc-1d33572a83ba" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/books/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/books/data-table.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/category/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/category/data-table.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/category/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/category/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/events/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/events/data-table.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/roles/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/roles/data-table.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/users/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/users/data-table.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/chart-area-interactive.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/chart-area-interactive.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/section-cards.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/section-cards.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/api/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/auth.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/api/book.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/book.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/api/category.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/category.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/api/events.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/events.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/api/roles.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/roles.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/api/user.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/user.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,7 +135,7 @@
       <workItem from="1753646609729" duration="604000" />
       <workItem from="1753679160915" duration="6792000" />
       <workItem from="1753768060670" duration="712000" />
-      <workItem from="1754250091829" duration="1905000" />
+      <workItem from="1754250091829" duration="6102000" />
     </task>
     <servers />
   </component>

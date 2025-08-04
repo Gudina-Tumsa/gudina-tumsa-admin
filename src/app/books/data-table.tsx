@@ -273,7 +273,7 @@ export default function CreateBookSection() {
         }
       }
 
-      const res = await fetch("http://localhost:3000/api/book", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book`, {
         method: "POST",
         body: form,
       });
@@ -363,7 +363,7 @@ export default function CreateBookSection() {
             </Select>
 
             <Label>Book File (PDF)</Label>
-            <Input type="file" accept=".pdf" onChange={(e) => setBookFile(e.target.files?.[0] ?? null)} />
+            <Input type="file"  onChange={(e) => setBookFile(e.target.files?.[0] ?? null)} />
 
             <Label>Cover Image (PNG/JPEG)</Label>
             <Input type="file" accept="image/*" onChange={(e) => setCoverImage(e.target.files?.[0] ?? null)} />
@@ -533,7 +533,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           formData.append("audioFile", file);
 
           try {
-            const response = await fetch("http://localhost:3000/api/book/upload-audio-summarization", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/upload-audio-summarization`, {
               method: "POST",
               body: formData,
             });
