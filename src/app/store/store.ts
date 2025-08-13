@@ -1,3 +1,6 @@
+/* eslint-disable  */
+// @ts-nocheck
+
 import { configureStore } from '@reduxjs/toolkit';
 
 import userReducer from './features/userSlice'

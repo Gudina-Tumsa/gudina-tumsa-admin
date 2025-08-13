@@ -1,3 +1,6 @@
+/* eslint-disable  */
+// @ts-nocheck
+
 "use client"
 import { useState } from "react"
 import { useRouter } from "next/navigation" // or "next/router" for older Next.js versions

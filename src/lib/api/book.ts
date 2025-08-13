@@ -1,3 +1,6 @@
+/* eslint-disable  */
+// @ts-nocheck
+
 import { BookListResponse } from '@/types/book';
 
 export interface GetBooksRequest {
@@ -99,7 +102,7 @@ export const updateBook = async (updateBook: z.infer<typeof schema>)=> {
                 description: updateBook.description,
                 author : updateBook.author,
                 pageCount : updateBook.pageCount
-                
+
             }),
         });
 

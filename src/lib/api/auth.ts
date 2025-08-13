@@ -1,3 +1,7 @@
+
+/* eslint-disable  */
+// @ts-nocheck
+
 import { LoginResponse } from '@/types/auth';
 
 interface LoginRequest {

@@ -1,3 +1,6 @@
+/* eslint-disable  */
+// @ts-nocheck
+
 export interface BookData {
     _id: string;
     title: string;

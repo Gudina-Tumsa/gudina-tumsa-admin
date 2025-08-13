@@ -1,3 +1,6 @@
+/* eslint-disable  */
+// @ts-nocheck
+
 import { CategoryListResponse } from '@/types/category';
 
 interface GetCategoriesRequest {

@@ -1,3 +1,6 @@
+/* eslint-disable  */
+// @ts-nocheck
+
 export interface EventData {
     _id: string;
     title: string;

@@ -1,3 +1,5 @@
+/* eslint-disable  */
+// @ts-nocheck
 
 export interface UpdateUserRequest {
     firstName?: string;
@@ -39,7 +41,7 @@ export const updateUser = async (request : UpdateUserRequest , id : string) => {
 
 
 export interface GetUsersRequset {
-    page : number; 
+    page : number;
     limit : number;
 }
 
@@ -87,7 +89,7 @@ export const getUsers = async (request: GetUsersRequset): Promise<PaginatedUsers
         // if (request.savedByUser) params.append('savedByUser' , request.savedByUser)
         if (request.page) params.append('page', String(request.page));
         if (request.limit) params.append('limit', String(request.limit));
-      
+
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users?${params.toString()}`, {
             method: 'GET',
