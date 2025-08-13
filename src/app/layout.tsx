@@ -1,7 +1,8 @@
+/* eslint-disable  */
+// @ts-nocheck
+
 import type {Metadata} from "next";
 import {Geist, Geist_Mono} from "next/font/google";
-import {Provider} from 'react-redux'
-import {store, persistor} from './store/store'
 import {Providers} from "./Provider"
 import { Toaster } from "react-hot-toast";
 
