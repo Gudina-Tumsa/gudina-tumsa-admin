@@ -148,6 +148,17 @@ export default function CreateSection() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
+
+      if (!formData.name) {
+        toast.error("Please enter role");
+        return;
+      }
+
+      if (formData.name != "admin" && formData.name != "basic" && formData.name != "uploader") {
+        toast.error("Invalid role");
+        return;
+      }
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/role`, {
         method: "POST",
         headers: {
@@ -163,6 +174,10 @@ export default function CreateSection() {
         name: "",
         permissions: [],
       });
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       console.error(error);
       toast.error("Failed to create role");
@@ -342,9 +357,16 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       }
 
       const handleSave = (updatedEvent: z.infer<typeof schema>) => {
+        if (updatedEvent.name != "admin" && updatedEvent.name != "basic"  && updatedEvent.name != "uploader") {
+          toast.error("Invalid role");
+          return;
+        }
         updateRoleApi(updatedEvent)
             .then(() => {
               toast.success("Role updated successfully")
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
               setIsEditDialogOpen(false)
             })
             .catch((err) => {

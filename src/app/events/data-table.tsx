@@ -217,6 +217,9 @@ export default function CreateSection() {
                 createdBy: user?.user?._id ?? "",
                 isActive: true,
             });
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
         } catch (error) {
             console.log(error)
             toast.error("Failed to create event");
@@ -359,6 +362,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
                 deleteEvent(row.original.id)
                     .then(() => {
                         toast.success("Event deleted successfully")
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
                     })
                     .catch((err) => {
                         toast.error("Failed to delete event")

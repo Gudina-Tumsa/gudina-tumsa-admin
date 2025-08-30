@@ -95,7 +95,6 @@ import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { deleteBook , updateBook } from "@/lib/api/book"
 import { getCategories } from "@/lib/api/category"
-import userSlice from "@/app/store/features/userSlice";
 import {useSelector} from "react-redux";
 import {RootState} from "@/app/store/store";
 
@@ -117,6 +116,39 @@ interface EditFormProps {
   onSave: (updatedEvent: z.infer<typeof schema>) => void
   onCancel: () => void
 }
+
+
+
+export function DescriptionCell({ text }: { text: string }) {
+  const MAX_LENGTH = 50
+  const isLong = text.length > MAX_LENGTH
+  const shortText = isLong ? text.slice(0, MAX_LENGTH) + "..." : text
+
+  return (
+      <div className="w-full">
+        {isLong ? (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="link" className="p-0 text-left text-muted-foreground underline text-sm">
+                  {shortText} <span className="text-blue-500">Read More</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Full Description</DialogTitle>
+                </DialogHeader>
+                <div className="max-h-[60vh] overflow-y-auto whitespace-pre-line text-sm text-muted-foreground">
+                  {text}
+                </div>
+              </DialogContent>
+            </Dialog>
+        ) : (
+            <p>{text}</p>
+        )}
+      </div>
+  )
+}
+
 
 const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
   const [editedEvent, setEditedEvent] = React.useState(event)
@@ -284,8 +316,14 @@ export default function CreateBookSection() {
       if (!res.ok) throw new Error("Failed to upload book");
 
       toast.success("Book uploaded successfully");
+
+
       setBookFile(null);
       setCoverImage(null);
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       console.error(error);
       toast.error("Failed to upload book");
@@ -365,7 +403,7 @@ export default function CreateBookSection() {
               </SelectContent>
             </Select>
 
-            <Label>Book File (PDF)</Label>
+            <Label>Book File (EPUB/PDF)</Label>
             <Input type="file"  onChange={(e) => setBookFile(e.target.files?.[0] ?? null)} />
 
             <Label>Cover Image (PNG/JPEG)</Label>
@@ -485,7 +523,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "description",
     header: "description",
     cell: ({ row }) => (
-      <p>{row.original.description}</p>
+      // <p>{row.original.description}</p>
+      <DescriptionCell text={row.original.description} />
+
     ),
   },
   {
@@ -532,8 +572,10 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           if (!file) return;
 
           const formData = new FormData();
-          formData.append("bookId", row.original.id); // Assuming this is the book ID
+          formData.append("bookId", row.original.id); // Book ID
           formData.append("audioFile", file);
+
+          const uploadToast = toast.loading("Uploading audio summarization...");
 
           try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/upload-audio-summarization`, {
@@ -545,9 +587,41 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
               throw new Error("Upload failed");
             }
 
-            toast.success("Audio summarization uploaded successfully!");
+            toast.success("Audio summarization uploaded successfully!", { id: uploadToast });
           } catch (err) {
-            toast.error("Failed to upload audio summarization");
+            toast.error("Failed to upload audio summarization", { id: uploadToast });
+          }
+        };
+
+        input.click();
+      };
+
+      const handleCoverImageUpload = async () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+
+        input.onchange = async () => {
+          const file = input.files?.[0];
+          if (!file) return;
+
+          const formData = new FormData();
+          formData.append("bookId", row.original.id);
+          formData.append("coverImage", file);
+
+          try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/upload-cover-image`, {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!response.ok) {
+              throw new Error("Upload failed");
+            }
+
+            toast.success("Upload Cover Image successfully!");
+          } catch (err) {
+            toast.error("Upload cover image successfully!");
           }
         };
 
@@ -599,6 +673,10 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
                 <DropdownMenuItem variant="destructive" onClick={handleAudioSummarization}>
                   Upload Audio Summarization
                 </DropdownMenuItem>
+                <DropdownMenuItem variant="destructive" onClick={handleCoverImageUpload}>
+                  Upload Cover Image
+                </DropdownMenuItem>
+
               </DropdownMenuContent>
             </DropdownMenu>
 

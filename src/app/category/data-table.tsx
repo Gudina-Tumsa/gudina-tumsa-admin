@@ -290,6 +290,9 @@ export default function CreateSection() {
         isActive: true,
         createdBy: user?.user?._id ?? "",
       });
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       console.error(error);
       toast.error("Failed to create category");
@@ -321,27 +324,27 @@ export default function CreateSection() {
                 <input name="name" className="w-full border rounded px-2 py-1" value={formData.name} onChange={handleChange} placeholder="Enter name" />
               </div>
               <div>
-                <Label>Translations</Label>
-                <div className="flex flex-col gap-2">
-                  <input
-                      className="w-full border rounded px-2 py-1"
-                      placeholder="English Name"
-                      value={formData.nameTranslations.en || ""}
-                      onChange={(e) => handleTranslationChange("en", e.target.value)}
-                  />
-                  <input
-                      className="w-full border rounded px-2 py-1"
-                      placeholder="Amharic Name"
-                      value={formData.nameTranslations.am || ""}
-                      onChange={(e) => handleTranslationChange("am", e.target.value)}
-                  />
-                  <input
-                      className="w-full border rounded px-2 py-1"
-                      placeholder="Oromifa Translation"
-                      value={formData.nameTranslations.om || ""}
-                      onChange={(e) => handleTranslationChange("om", e.target.value)}
-                  />
-                </div>
+                {/*<Label>Translations</Label>*/}
+                {/*<div className="flex flex-col gap-2">*/}
+                {/*  <input*/}
+                {/*      className="w-full border rounded px-2 py-1"*/}
+                {/*      placeholder="English Name"*/}
+                {/*      value={formData.nameTranslations.en || ""}*/}
+                {/*      onChange={(e) => handleTranslationChange("en", e.target.value)}*/}
+                {/*  />*/}
+                {/*  <input*/}
+                {/*      className="w-full border rounded px-2 py-1"*/}
+                {/*      placeholder="Amharic Name"*/}
+                {/*      value={formData.nameTranslations.am || ""}*/}
+                {/*      onChange={(e) => handleTranslationChange("am", e.target.value)}*/}
+                {/*  />*/}
+                {/*  <input*/}
+                {/*      className="w-full border rounded px-2 py-1"*/}
+                {/*      placeholder="Oromifa Translation"*/}
+                {/*      value={formData.nameTranslations.om || ""}*/}
+                {/*      onChange={(e) => handleTranslationChange("om", e.target.value)}*/}
+                {/*  />*/}
+                {/*</div>*/}
               </div>
               <div>
                 <Label>Description</Label>

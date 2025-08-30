@@ -19,6 +19,8 @@ import {
   IconSearch,
   IconSettings,
   IconUsers,
+  IconDeviceAudioTape
+
 } from "@tabler/icons-react"
 
 
@@ -37,66 +39,59 @@ import {
 
 const data = {
   user: {
-    name: "shadcn",
+    name: "",
     email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: "",
   },
   navMain: [
     {
       title: "Dashboard",
       url: "/home",
       icon: IconDashboard,
+      showFor : ["admin"]
     },
     {
       title: "users",
       url: "/users",
       icon: IconListDetails,
+      showFor : ["admin"]
     },
     {
       title: "books",
       url: "/books",
       icon: IconChartBar,
+      showFor : ["admin" , "uploader"]
+    },
+    {
+      title : "Audio book",
+      url: "/audio_book",
+      icon : IconDeviceAudioTape,
+      showFor : ["admin" , "uploader"]
     },
     {
       title: "Category",
       url: "/category",
       icon: IconFolder,
+      showFor : ["admin" , "uploader"]
     },
     {
       title: "Role",
       url: "/roles",
       icon: IconUsers,
+      showFor : ["admin" ]
     },
     {
       title: "Events",
       url: "/events",
       icon: IconUsers,
+      showFor : ["admin" , "uploader"]
     },
   ],
 
   navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
+
   ],
   documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: IconDatabase,
-    },
 
   ],
 }

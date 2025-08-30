@@ -23,6 +23,7 @@ interface BookInterface {
   "category": string;
   "language" : string;
   "pageCount" : string;
+  contentType: string;
 }
 export default function Page() {
   const [books , setBooks] = useState<BookInterface[]>([])
@@ -31,7 +32,7 @@ export default function Page() {
     getBooks({page : 1 , limit :  20}).then((data)=>{
       let bookCollection : BookInterface[] = []
       data?.data?.books?.map((n)=>{
-        if (n.contentType === "book") {
+        if (n.contentType === "audio") {
           bookCollection.push({
             "id" :n._id,
             "title": n.title,
@@ -46,6 +47,8 @@ export default function Page() {
             "contentType": n.contentType,
           })
         }
+
+
       })
       setBooks(bookCollection)
     }).catch((err : unknown)=>{

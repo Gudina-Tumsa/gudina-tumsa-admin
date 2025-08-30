@@ -4,7 +4,8 @@ const nextConfig: NextConfig = {
   /* config options here */
     env: {
 
-        NEXT_PUBLIC_BASE_URL:  "https://apitest.gebeta.app",
+      //  NEXT_PUBLIC_BASE_URL:  "https://api.gudinatumsa.com",
+        NEXT_PUBLIC_BASE_URL:  "http://localhost:3000",
     },
 };
 

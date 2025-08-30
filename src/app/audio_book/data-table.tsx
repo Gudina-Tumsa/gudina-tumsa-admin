@@ -50,87 +50,35 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
-import toast from "react-hot-toast"
 import { z } from "zod"
-
-import { useIsMobile } from "@/hooks/use-mobile"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  Tabs,
-  TabsContent,
-
-} from "@/components/ui/tabs"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select"
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
+import {Tabs, TabsContent} from "@/components/ui/tabs"
+import {Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription} from "@/components/ui/dialog";
 import { useEffect, useState } from "react"
-import { getRoles } from "@/lib/api/roles"
-import {deleteUser , updateUser , UpdateUserRequest} from "@/lib/api/user"
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import toast from "react-hot-toast"
+import { deleteBook , updateBook } from "@/lib/api/book"
+import { getCategories } from "@/lib/api/category"
+import {useSelector} from "react-redux";
+import {RootState} from "@/app/store/store";
+
 export const schema = z.object({
   id: z.string(),
-  firstName: z.string(),
-  lastName: z.string(),
-  email: z.string(),
-  username: z.string(),
-  phone: z.string(),
-  userrole: z.string(),
-  languagePreference: z.string(),
+  title: z.string(),
+  titleTranslations: z.string(),
+  author: z.string(),
+  description: z.string(),
+  publicationYear: z.string(),
+  category: z.string(),
+  language: z.string(),
+  pageCount : z.string()
 
 })
-
-interface Role {
-  id: string;
-  name: string;
-}
 
 interface EditFormProps {
   event: z.infer<typeof schema>
@@ -140,117 +88,134 @@ interface EditFormProps {
 
 const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
   const [editedEvent, setEditedEvent] = React.useState(event)
-  const [password, setPassword] = React.useState('')
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    if (name === 'password') {
-      setPassword(value) // update password separately
-    } else {
-      setEditedEvent(prev => ({
-        ...prev,
-        [name]: value
-      }))
-    }
+    setEditedEvent(prev => ({
+      ...prev,
+      [name]: value
+    }))
   }
-  const handleSaveClick = () => {
-    // Combine editedEvent and password when calling onSave
-    onSave({
-      ...editedEvent,
-      password, // include password (could be empty)
-    })
-  }
+
   return (
       <div className="space-y-4">
         <div>
-          <Label htmlFor="firstName">First Name</Label>
+          <Label htmlFor="title">Title</Label>
           <Input
-              id="firstName"
-              name="firstName"
-              value={editedEvent.firstName}
+              id="title"
+              name="title"
+              value={editedEvent.title ?? ''}
               onChange={handleChange}
           />
         </div>
         <div>
-          <Label htmlFor="lastName">Last Name</Label>
+          <Label htmlFor="author">Author</Label>
           <Input
-              id="lastName"
-              name="lastName"
-              value={editedEvent.lastName}
+              id="author"
+              name="author"
+              value={editedEvent.author ?? ''}
               onChange={handleChange}
           />
         </div>
         <div>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="description">Description</Label>
           <Input
-              id="email"
-              name="email"
-              value={editedEvent.email}
+              id="description"
+              name="description"
+              value={editedEvent.description ?? ''}
               onChange={handleChange}
           />
         </div>
         <div>
-          <Label htmlFor="username">Username</Label>
+          <Label htmlFor="publisher">Language</Label>
           <Input
-              id="username"
-              name="username"
-              value={editedEvent.username}
+              id="language"
+              name="language"
+              value={editedEvent.language ?? ''}
               onChange={handleChange}
           />
         </div>
         <div>
-          <Label htmlFor="phone">Phone</Label>
+          <Label htmlFor="publicationYear">Publication Year</Label>
           <Input
-              id="phone"
-              name="phone"
-              value={editedEvent.phone}
+              id="publicationYear"
+              name="publicationYear"
+              type="number"
+              value={editedEvent.publicationYear?.toString() ?? ''}
               onChange={handleChange}
           />
         </div>
         <div>
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="isbn">ISBN</Label>
           <Input
-              id="password"
-              name="password"
-              type="password"
-              value={password}
+              id="isbn"
+              name="isbn"
+              value={editedEvent.isbn ?? ''}
               onChange={handleChange}
           />
         </div>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={onCancel}>
+        <div>
+          <Label htmlFor="pageCount">Page Count</Label>
+          <Input
+              id="pageCount"
+              name="pageCount"
+              value={editedEvent.pageCount ?? ''}
+              onChange={handleChange}
+          />
+        </div>
+
+        <div className="flex gap-2">
+          <button
+              className="px-4 py-2 bg-blue-600 text-white rounded"
+              onClick={() => onSave(editedEvent)}
+          >
+            Save
+          </button>
+          <button
+              className="px-4 py-2 bg-gray-300 text-black rounded"
+              onClick={onCancel}
+          >
             Cancel
-          </Button>
-          <Button onClick={handleSaveClick}>Save</Button>
+          </button>
         </div>
       </div>
   )
 }
 
 
-export default function CreateUserSection() {
-  const [loading, setLoading] = useState(false);
-  const [roles, setRoles] = useState<Role[]>([]);
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    username: "",
-    phone: "",
-    password: "",
-    role: ""
+export default function CreateBookSection() {
 
+  interface CategoryInterface {
+    id  : string;
+    name : string;
+  }
+  const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState<CategoryInterface[]>([]);
+  const user = useSelector((state: RootState) => state.user)
+  const [formData, setFormData] = useState({
+    title: "",
+    author: "",
+    isbn: "",
+    description: "",
+    publisher: "",
+    publicationYear: "",
+    language: "en",
+    category: "", // category ID
+    tags: [],
+    titleTranslations: {},
+    authorTranslations: { },
+    descriptionTranslations: { },
+    pageCount: 0,
+    uploadDate: new Date(),
+    uploadedBy: user.user?._id,
+    isActive: true,
+    metadata: {  },
   });
 
-  useEffect(() => {
-    getRoles({page : 1 , limit :100})
-      .then((res) => {
-        const _roles: Role[] = res.data?.roles.map((r: any) => ({ id: r._id, name: r.name })) || [];
-        setRoles(_roles);
-      })
-      .catch(() => toast.error("Failed to load roles"));
-  }, []);
+  const [bookFile, setBookFile] = useState<File | null>(null);
+  const [coverImage, setCoverImage] = useState<File | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -259,91 +224,141 @@ export default function CreateUserSection() {
   };
 
   const handleSubmit = async () => {
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.username || !formData.password || !formData.role) {
-      toast.error("Please fill all required fields");
-      return;
-    }
-
     try {
-      setLoading(true);
-      const payload = {
-        ...formData,
-        // readingPreferences: formData.readingPreferences.split(",").map((pref) => pref.trim()).filter(Boolean),
-      };
+      if (!bookFile || !coverImage) {
+        toast.error("Please upload both book file and cover image.");
+        return;
+      }
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users`, {
+      setLoading(true);
+
+      const form = new FormData();
+      form.append("audioFile", bookFile);
+      form.append("coverImage", coverImage);
+      for (const key in formData) {
+        const value = formData[key as keyof typeof formData];
+        if (typeof value === "object") {
+          form.append(key, JSON.stringify(value));
+        } else {
+          form.append(key, value as string);
+        }
+      }
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/audioBook`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: form,
       });
 
-      if (!res.ok) throw new Error("User creation failed");
-      toast.success("User created successfully");
+      if (!res.ok) throw new Error("Failed to upload book");
+
+      toast.success("Book uploaded successfully");
+
+      setBookFile(null);
+      setCoverImage(null);
       setTimeout(() => {
         window.location.reload();
       }, 2000);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to create user");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to upload book");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    getCategories({ page: 1, limit: 100 })
+        .then((res) => {
+          const _categories: CategoryInterface[] = res.data?.categories.map((data: any) => ({
+            id: data._id,
+            name: data.name,
+          })) || [];
+
+          setCategories(_categories);
+        })
+        .catch(() => toast.error("Failed to load categories"));
+  }, []);
 
   return (
     <div className="flex items-center gap-2">
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="outline" size="sm">
-            + Create User
+            + Upload Audio Book
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-xl">
+        <DialogContent className="max-w-xl overflow-y-auto max-h-[90vh]">
           <DialogHeader>
-            <DialogTitle>Create a New User</DialogTitle>
-            <DialogDescription>Fill in user details to create a new account.</DialogDescription>
+            <DialogTitle>Upload a New Book</DialogTitle>
+            <DialogDescription>Fill in book details and upload files.</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 pt-4">
-            <Label>First Name</Label>
-            <Input name="firstName" value={formData.firstName} onChange={handleChange} />
+            <Label>Title</Label>
+            <Input name="title" value={formData.title} onChange={handleInputChange} />
 
-            <Label>Last Name</Label>
-            <Input name="lastName" value={formData.lastName} onChange={handleChange} />
+            <Label>Author</Label>
+            <Input name="author" value={formData.author} onChange={handleInputChange} />
 
-            <Label>Email</Label>
-            <Input name="email" value={formData.email} onChange={handleChange} type="email" />
 
-            <Label>Username</Label>
-            <Input name="username" value={formData.username} onChange={handleChange} />
 
-            <Label>Password</Label>
-            <Input name="password" value={formData.password} onChange={handleChange} type="password" />
+            <Label>ISBN</Label>
+            <Input name="isbn" value={formData.isbn} onChange={handleInputChange} />
 
-            <Label>Phone (optional)</Label>
-            <Input name="phone" value={formData.phone} onChange={handleChange} />
+            <Label>Description</Label>
+            <Input name="description" value={formData.description} onChange={handleInputChange} />
 
-            <Label>Role</Label>
+            <Label>Publisher</Label>
+            <Input name="publisher" value={formData.publisher} onChange={handleInputChange} />
+
+
+            <Label>Publication Year</Label>
+            <Input name="publicationYear" value={formData.publicationYear} onChange={handleInputChange} />
+
+
+            <Label>Category</Label>
             <Select
-              value={formData.role}
-              onValueChange={(value) => setFormData((prev) => ({ ...prev, role: value }))}
+              value={formData.category}
+              onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select a role" />
+                <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                {roles.map((role) => (
-                  <SelectItem key={role.id} value={role.id}>
-                    {role.name}
-                  </SelectItem>
-                ))}
+                {categories.map((cat) => {
+                  console.log(cat)
+                  return (
+
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </SelectItem>
+                  )
+                })}
               </SelectContent>
             </Select>
 
+            <Label>Audio File</Label>
+            <Input type="file" accept="audio/*"  onChange={(e) => setBookFile(e.target.files?.[0] ?? null)} />
 
+            <Label>Cover Image (PNG/JPEG)</Label>
+            <Input type="file" accept="image/*" onChange={(e) => setCoverImage(e.target.files?.[0] ?? null)} />
+
+            <Label>page count</Label>
+            <Input name="pageCount" value={formData.pageCount} onChange={handleInputChange} />
+
+            <div className="flex items-center space-x-2 pt-2">
+              <Checkbox
+                id="active"
+                checked={formData.isActive}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({ ...prev, isActive: !!checked }))
+                }
+              />
+              <Label htmlFor="active">Is Active</Label>
+            </div>
 
             <Button onClick={handleSubmit} disabled={loading} className="w-full">
-              {loading ? "Creating..." : "Create User"}
+              {loading ? "Uploading..." : "Upload Audio Book"}
             </Button>
           </div>
         </DialogContent>
@@ -351,6 +366,7 @@ export default function CreateUserSection() {
     </div>
   );
 }
+
 
 function DragHandle({ id }: { id: string }) {
   const { attributes, listeners } = useSortable({
@@ -407,112 +423,163 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "id",
     header: "id",
     cell: ({ row }) => (
-
-     <p> {row.original.id}</p>
+      <p>{row.original.id}</p>
     ),
     enableHiding: false,
   },
   {
 
-    accessorKey: "firstName",
-    header: "first name",
+    accessorKey: "title",
+    header: "title",
     cell: ({ row }) => (
       <div className="w-32">
-          {row.original.firstName}
+          <p>{row.original.title}</p>
       </div>
     ),
   },
   {
-    accessorKey: "lastName",
-    header: "Last Name",
-    cell: ({ row }) => (
-        <p>{row.original.lastName}</p>
 
+    accessorKey: "titleTranslations",
+    header: "title translations",
+    cell: ({ row }) => (
+        <p>{row.original.titleTranslations}</p>
     ),
   },
-
-
   {
-    accessorKey: "email",
-    header : "email",
-
+    accessorKey: "author",
+    header: "author",
     cell: ({ row }) => (
-        <p>{row.original.email}</p>
+      <p>{row.original.author}</p>
     ),
   },
   {
 
-    accessorKey: "username",
-    header : "username",
+    accessorKey: "description",
+    header: "description",
     cell: ({ row }) => (
-      <p>{row.original.email}</p>
-    ),
-  },
-  {
-    accessorKey: "phone",
-    header: () => <div className="w-full text-right">phone</div>,
-    cell: ({ row }) => (
-      <p>{row.original.phone}</p>
+      <p>{row.original.description}</p>
     ),
   },
   {
 
-    accessorKey: "userrole",
-    header : "userrole",
+    accessorKey: "publicationYear",
+    header: "publication year",
     cell: ({ row }) => (
-        <p>{row.original.userrole}</p>
+      <p>{row.original.publicationYear}</p>
     ),
   },
-
   {
-    accessorKey: "languagePreference",
-    header: "languagePreference",
+    accessorKey: "category",
+    header: "category",
     cell: ({ row }) => (
-      <p>{row.original.languagePreference}</p>
+        <p>{row.original.category}</p>
     ),
   },
+  {
+    header: "language",
+    cell: ({ row }) => (
+        <p>{row.original.language}</p>
+    ),
+  },{
+    accessorKey: "pageCount",
+    header: "page count",
+    cell: ({ row }) => (
+        <p>{row.original.pageCount}</p>
+    ),
 
-
+  },
 
   {
     id: "actions",
     cell: ({row}) => {
-      const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false)
+      const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+
+      const handleAudioSummarization = async () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "audio/*";
+
+        input.onchange = async () => {
+          const file = input.files?.[0];
+          if (!file) return;
+
+          const formData = new FormData();
+          formData.append("bookId", row.original.id);
+          formData.append("audioFile", file);
+
+          try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/upload-audio-summarization`, {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!response.ok) {
+              throw new Error("Upload failed");
+            }
+
+            toast.success("Audio summarization uploaded successfully!");
+          } catch (err) {
+            toast.error("Failed to upload audio summarization");
+          }
+        };
+
+        input.click();
+      };
+
+      const handleCoverImageUpload = async () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+
+        input.onchange = async () => {
+          const file = input.files?.[0];
+          if (!file) return;
+
+          const formData = new FormData();
+          formData.append("bookId", row.original.id); // Assuming this is the book ID
+          formData.append("coverImage", file);
+
+          try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/upload-cover-image`, {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!response.ok) {
+              throw new Error("Upload failed");
+            }
+
+            toast.success("Upload Cover Image successfully!");
+          } catch (err) {
+            toast.error("Upload cover image successfully!");
+          }
+        };
+
+        input.click();
+      };
 
       const handleDelete = () => {
-        deleteUser(row.original.id)
+        deleteBook(row.original.id)
             .then(() => {
-              toast.success("User deleted successfully")
+              toast.success("book deleted successfully");
             })
             .catch((err) => {
-              toast.error("Failed to delete User")
-            })
-
+              toast.error("book to delete event");
+            });
       }
 
-      const handleSave = (updatedEvent: z.infer<typeof schema> , updatedPassowrd) => {
-
-        const values: UpdateUserRequest = {
-          firstName: updatedEvent.firstName,
-          lastName: updatedEvent.lastName,
-          email: updatedEvent.email,
-          username: updatedEvent.username,
-          phone: updatedEvent.phone,
-        }
-
-        if (updatedPassowrd && updatedPassowrd.trim() !== "") {
-          values.password = updatedPassowrd
-        }
-        updateUser(values , row.original.id)
+      const handleSave = (updatedEvent: z.infer<typeof schema>) => {
+        updateBook(updatedEvent)
             .then(() => {
-              toast.success("Role updated successfully")
+              toast.success("Event updated successfully")
               setIsEditDialogOpen(false)
             })
             .catch((err) => {
-              toast.error("Failed to update role")
+              toast.error("Failed to update event")
             })
 
       }
+
       return (
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
             <DropdownMenu>
@@ -533,12 +600,21 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
                 <DropdownMenuItem variant="destructive" onClick={handleDelete}>
                   Delete
                 </DropdownMenuItem>
+                <DropdownMenuItem variant="destructive" onClick={handleAudioSummarization}>
+                  Upload Audio Summarization
+                </DropdownMenuItem>
+                <DropdownMenuItem variant="destructive" onClick={handleCoverImageUpload}>
+                  Upload Cover Image
+                </DropdownMenuItem>
+
               </DropdownMenuContent>
             </DropdownMenu>
 
+
+
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Edit Role</DialogTitle>
+                <DialogTitle>Edit Book</DialogTitle>
                 <DialogDescription>
                   Make changes to the event here. Click save when you're done.
                 </DialogDescription>
@@ -549,10 +625,13 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
                   onCancel={() => setIsEditDialogOpen(false)}
               />
             </DialogContent>
+
+
+
           </Dialog>
       )
+    }
 
-    },
   },
 ]
 
@@ -668,7 +747,7 @@ export function DataTable({ data: initialData, }: { data: z.infer<typeof schema>
         </Select>
 
         <div></div>
-        <CreateUserSection/>
+        <CreateBookSection/>
       </div>
       <TabsContent
         value="outline"
@@ -821,24 +900,4 @@ export function DataTable({ data: initialData, }: { data: z.infer<typeof schema>
     </Tabs>
   )
 }
-
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-]
-
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "var(--primary)",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "var(--primary)",
-  },
-} satisfies ChartConfig
 

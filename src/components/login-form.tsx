@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label"
 import {loginUser} from "@/lib/api/auth"
 import {loginSuccess} from "./../app/store/features/userSlice"
 import { Eye, EyeOff } from 'lucide-react'
+import {getRoles} from "@/lib/api/roles";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const [email, setEmail] = useState("")
@@ -36,11 +37,22 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
     try {
       const response = await loginUser({ email, password })
+      let roles = await getRoles({page : 1 , limit: 50})
+      // in here check the role and dont log him in
+      let permittedRole = false
+      for (const role of roles.data.roles) {
+        if(role._id == response.data.user.role && (role.name == "admin" || role.name == "uploader")) {
+          permittedRole = true
+        }
+      }
+      console.log(permittedRole)
+      if (!permittedRole) {
+        alert("Unauthorized user")
+      } else {
+        dispatch(loginSuccess(response))
+        router.push("/home")
+      }
 
-      console.log(" response " , response)
-      dispatch(loginSuccess(response))
-
-      router.push("/home")
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unknown error occurred")
     } finally {
