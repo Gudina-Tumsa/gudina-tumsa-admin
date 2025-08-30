@@ -37,12 +37,14 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
     try {
       const response = await loginUser({ email, password })
+      let userRole = "admin"
       let roles = await getRoles({page : 1 , limit: 50})
       // in here check the role and dont log him in
       let permittedRole = false
       for (const role of roles.data.roles) {
         if(role._id == response.data.user.role && (role.name == "admin" || role.name == "uploader")) {
           permittedRole = true
+          userRole = role.name
         }
       }
       console.log(permittedRole)
@@ -50,7 +52,13 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         alert("Unauthorized user")
       } else {
         dispatch(loginSuccess(response))
-        router.push("/home")
+        // only if admin
+        if (userRole == "admin") {
+          router.push("/home")
+        } else{
+          router.push("/books")
+        }
+
       }
 
     } catch (err) {
