@@ -46,7 +46,7 @@ export const deleteBook = async(id : string)  => {
     }
 }
 
-export const getBooks = async (request: GetBooksRequest): Promise<BookListResponse> => {
+export const getBooks = async (request: GetBooksRequest , audioBook = false): Promise<BookListResponse> => {
     try {
         const params = new URLSearchParams();
 
@@ -63,22 +63,38 @@ export const getBooks = async (request: GetBooksRequest): Promise<BookListRespon
         if (request.limit) params.append('limit', String(request.limit));
         if (request.sort) params.append('sort', request.sort);
         if (request.savedByUser) params.append('savedByUser' , request.savedByUser)
+        if (audioBook) {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/audio-book?${params.toString()}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book?${params.toString()}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        console.log(response);
+            if (!response.ok) {
+                const errorData: ApiError = await response.json();
+                throw new Error(errorData.message || 'Getting books failed');
+            }
 
-        if (!response.ok) {
-            const errorData: ApiError = await response.json();
-            throw new Error(errorData.message || 'Getting books failed');
+            const data: BookListResponse = await response.json();
+            return data;
+        } else{
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book?${params.toString()}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                const errorData: ApiError = await response.json();
+                throw new Error(errorData.message || 'Getting books failed');
+            }
+
+            const data: BookListResponse = await response.json();
+            return data;
         }
 
-        const data: BookListResponse = await response.json();
-        return data;
     } catch (error) {
         console.error('Get books error:', error);
         throw error;

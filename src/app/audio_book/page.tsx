@@ -4,11 +4,8 @@
 "use client"
 import { AppSidebar } from "@/components/app-sidebar"
 import { DataTable } from "./data-table"
-    import {useState , useEffect} from "react"
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar"
+import {useState , useEffect} from "react"
+import { SidebarInset, SidebarProvider,} from "@/components/ui/sidebar"
 import {getBooks} from "./../../lib/api/book"
 
 
@@ -29,7 +26,7 @@ export default function Page() {
   const [books , setBooks] = useState<BookInterface[]>([])
   const [loading, setLoading] = useState(true)
   useEffect(() => {
-    getBooks({page : 1 , limit :  20}).then((data)=>{
+    getBooks({page : 1 , limit :  20} , true).then((data)=>{
       let bookCollection : BookInterface[] = []
       data?.data?.books?.map((n)=>{
         if (n.contentType === "audio") {
