@@ -303,7 +303,9 @@ export default function CreateBookSection() {
             <Label>Cover Image (PNG/JPEG)</Label>
             <Input type="file" accept="image/*" onChange={(e) => setCoverImage(e.target.files?.[0] ?? null)} />
 
-            <Label>page count</Label>
+            <Label>
+              Audio length
+            </Label>
             <Input name="pageCount" value={formData.pageCount} onChange={handleInputChange} />
 
             <div className="flex items-center space-x-2 pt-2">

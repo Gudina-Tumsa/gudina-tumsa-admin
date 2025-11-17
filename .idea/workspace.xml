@@ -4,76 +4,47 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="67eed5a9-951b-456d-95bc-1d33572a83ba" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/components/forminput.tsx" afterDir="false" />
+    <list default="true" id="232014bd-9cd0-4008-bec2-98670508de8e" name="Changes" comment="some fixes">
+      <change beforePath="$PROJECT_DIR$/.idea/gudina-tumsa-admin.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/login-form.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/login-form.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/nav-user.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/nav-user.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/api/user.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/user.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/audio_book/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/audio_book/data-table.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="TypeScript File" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 0
+  &quot;associatedIndex&quot;: 3
 }</component>
-  <component name="ProjectId" id="2z2AqZ56kH4LLWO5j9ps6sfuM4y" />
+  <component name="ProjectId" id="35bhlZouNcvvAgY3vTqaJUfiseU" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;js.debugger.nextJs.config.created.client&quot;: &quot;true&quot;,
-    &quot;js.debugger.nextJs.config.created.server&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/abenezer/Desktop/projects/web/gudina-tumsa-admin/src/app&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;pnpm&quot;,
-    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/home/abenezer121/Music/project/online-library-project/online-library-admin/node_modules/prettier&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/abenezer/Desktop/projects/web/gudina-tumsa-admin/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "js.debugger.nextJs.config.created.client": "true",
+    "js.debugger.nextJs.config.created.server": "true",
+    "last_opened_file_path": "/Users/abenezer/Desktop/projects/gudina/admin",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "yarn",
+    "ts.external.directory.path": "/Users/abenezer/Desktop/projects/gudina/admin/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/app" />
-      <recent name="$PROJECT_DIR$/src/lib/api" />
-      <recent name="$PROJECT_DIR$/src/app/roles" />
-      <recent name="$PROJECT_DIR$/src/app/category" />
-      <recent name="$PROJECT_DIR$/src/app/users" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/app/home" />
-    </key>
-  </component>
-  <component name="RubyModuleManagerSettings">
-    <option name="blackListedRootsPaths">
-      <list>
-        <option value="$PROJECT_DIR$" />
-      </list>
-    </option>
-  </component>
+}]]></component>
   <component name="RunManager" selected="npm.Next.js: server-side">
     <configuration name="Next.js: debug client-side" type="JavascriptDebugType" uri="http://localhost:3000/">
       <method v="2" />
@@ -98,44 +69,30 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="67eed5a9-951b-456d-95bc-1d33572a83ba" name="Changes" comment="" />
-      <created>1750918985836</created>
+      <changelist id="232014bd-9cd0-4008-bec2-98670508de8e" name="Changes" comment="" />
+      <created>1763384829708</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1750918985836</updated>
-      <workItem from="1750918988211" duration="1241000" />
-      <workItem from="1750931148748" duration="40000" />
-      <workItem from="1750931594565" duration="15269000" />
-      <workItem from="1751023378526" duration="2787000" />
-      <workItem from="1751026181543" duration="3920000" />
-      <workItem from="1751038647877" duration="1180000" />
-      <workItem from="1751039846877" duration="4348000" />
-      <workItem from="1751100889908" duration="1411000" />
-      <workItem from="1751265308788" duration="1269000" />
-      <workItem from="1751278382794" duration="7775000" />
-      <workItem from="1751302432642" duration="2851000" />
-      <workItem from="1751353620560" duration="4075000" />
-      <workItem from="1751361024076" duration="1515000" />
-      <workItem from="1751534935599" duration="2159000" />
-      <workItem from="1751607386398" duration="1917000" />
-      <workItem from="1751869113068" duration="567000" />
-      <workItem from="1752647950395" duration="14734000" />
-      <workItem from="1752668276760" duration="6391000" />
-      <workItem from="1753646609729" duration="604000" />
-      <workItem from="1753679160915" duration="6792000" />
-      <workItem from="1753768060670" duration="712000" />
-      <workItem from="1754250091829" duration="7825000" />
-      <workItem from="1755058336924" duration="6250000" />
-      <workItem from="1755243345546" duration="748000" />
-      <workItem from="1755845420894" duration="1930000" />
-      <workItem from="1756104051301" duration="6107000" />
-      <workItem from="1756450876610" duration="2277000" />
-      <workItem from="1756498272243" duration="101000" />
-      <workItem from="1756532657403" duration="7843000" />
+      <updated>1763384829708</updated>
+      <workItem from="1763384830762" duration="2856000" />
+      <workItem from="1763389305387" duration="224000" />
     </task>
+    <task id="LOCAL-00001" summary="some fixes">
+      <option name="closed" value="true" />
+      <created>1763388257276</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1763388257276</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="some fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="some fixes" />
   </component>
 </project>
