@@ -16,6 +16,7 @@ export interface GetBooksRequest {
     limit?: number;
     sort?: 'recent' | 'popular' | 'downloads' | 'views';
     savedByUser : string;
+    contentType : string;
 }
 
 interface ApiError {
@@ -63,6 +64,11 @@ export const getBooks = async (request: GetBooksRequest , audioBook = false): Pr
         if (request.limit) params.append('limit', String(request.limit));
         if (request.sort) params.append('sort', request.sort);
         if (request.savedByUser) params.append('savedByUser' , request.savedByUser)
+        if (request.contentType) {
+            params.append('contentType' , request.contentType)
+        }      else{
+            params.append('contentType' , 'Book')
+        }
         if (audioBook) {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/audio-book?${params.toString()}`, {
                 method: 'GET',

@@ -98,6 +98,32 @@ import { getCategories } from "@/lib/api/category"
 import {useSelector} from "react-redux";
 import {RootState} from "@/app/store/store";
 
+import {Tooltip , TooltipProvider , TooltipTrigger , TooltipContent} from "@/components/ui/tooltip";
+
+const TruncatedText = ({ text, maxLength = 10 }: { text: string; maxLength?: number }) => {
+  if (!text) return <span className="text-muted-foreground">-</span>
+
+  const shouldTruncate = text.length > maxLength
+  const displayText = shouldTruncate ? `${text.substring(0, maxLength)}...` : text
+
+  if (!shouldTruncate) {
+    return <span>{text}</span>
+  }
+
+  return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="truncate cursor-help">{displayText}</span>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p className="max-w-xs">{text}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+  )
+}
+
 export const schema = z.object({
   id: z.string(),
   title: z.string(),
@@ -499,7 +525,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     header: "title",
     cell: ({ row }) => (
       <div className="w-32">
-          <p>{row.original.title}</p>
+        <TruncatedText text={row.original.title} />
       </div>
     ),
   },
@@ -509,13 +535,14 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     header: "title translations",
     cell: ({ row }) => (
         <p>{row.original.titleTranslations}</p>
+
     ),
   },
   {
     accessorKey: "author",
     header: "author",
     cell: ({ row }) => (
-      <p>{row.original.author}</p>
+      <TruncatedText text={row.original.author} />
     ),
   },
   {
@@ -523,9 +550,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "description",
     header: "description",
     cell: ({ row }) => (
-      // <p>{row.original.description}</p>
-      <DescriptionCell text={row.original.description} />
-
+      <TruncatedText text={row.original.description} />
     ),
   },
   {

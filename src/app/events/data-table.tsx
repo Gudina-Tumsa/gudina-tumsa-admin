@@ -87,6 +87,31 @@ import { useSelector } from "react-redux"
 import { RootState } from "../store/store"
 import toast from "react-hot-toast"
 import { deleteEvent, updateEventApi } from "@/lib/api/events"
+import {Tooltip , TooltipProvider , TooltipTrigger , TooltipContent} from "@/components/ui/tooltip";
+
+const TruncatedText = ({ text, maxLength = 10 }: { text: string; maxLength?: number }) => {
+    if (!text) return <span className="text-muted-foreground">-</span>
+
+    const shouldTruncate = text.length > maxLength
+    const displayText = shouldTruncate ? `${text.substring(0, maxLength)}...` : text
+
+    if (!shouldTruncate) {
+        return <span>{text}</span>
+    }
+
+    return (
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <span className="truncate cursor-help">{displayText}</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p className="max-w-xs">{text}</p>
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
+    )
+}
 
 export const schema = z.object({
     id: z.string(),
@@ -321,7 +346,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
         header: "title",
         cell: ({ row }) => (
             <div className="w-32">
-                <p>{row.original.title}</p>
+                <TruncatedText text={row.original.title} maxLines={2} />
             </div>
         ),
         enableHiding: false,
@@ -331,7 +356,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
         header: "location",
         cell: ({ row }) => (
             <div className="w-32">
-                <p>{row.original.location}</p>
+                <TruncatedText text={row.original.location} maxLines={2} />
             </div>
         ),
     },
@@ -342,6 +367,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
             <div className="w-32">
                 <p>{row.original.startDate}</p>
             </div>
+
         ),
     },
     {

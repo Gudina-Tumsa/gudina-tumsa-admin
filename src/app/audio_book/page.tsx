@@ -26,7 +26,7 @@ export default function Page() {
   const [books , setBooks] = useState<BookInterface[]>([])
   const [loading, setLoading] = useState(true)
   useEffect(() => {
-    getBooks({page : 1 , limit :  20} , true).then((data)=>{
+    getBooks({page : 1 , limit :  20 , contentType : "Audio"} , true).then((data)=>{
       let bookCollection : BookInterface[] = []
       data?.data?.books?.map((n)=>{
         if (n.contentType === "audio") {

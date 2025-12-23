@@ -110,6 +110,7 @@ import { useState } from "react"
 import { RootState } from "../store/store"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { deleteCategory , updateCategoryApi } from "@/lib/api/category"
+import {Tooltip} from "@/components/ui/tooltip";
 
 export const schema = z.object({
   id: z.string(),
@@ -117,6 +118,30 @@ export const schema = z.object({
   nameTranslations: z.record(z.string()),
   description: z.string(),
 })
+
+const TruncatedText = ({ text, maxLength = 50 }: { text: string; maxLength?: number }) => {
+  if (!text) return <span className="text-muted-foreground">-</span>
+
+  const shouldTruncate = text.length > maxLength
+  const displayText = shouldTruncate ? `${text.substring(0, maxLength)}...` : text
+
+  if (!shouldTruncate) {
+    return <span>{text}</span>
+  }
+
+  return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="truncate cursor-help">{displayText}</span>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p className="max-w-xs">{text}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+  )
+}
 
 
 export interface CreateCategoryRequest {
@@ -412,7 +437,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     header: "name",
     cell: ({ row }) => (
       <div className="w-32">
-          <p>{row.original.name}</p>
+        <TruncatedText text={row.original.name} maxLines={2} />
       </div>
     ),
   },
@@ -444,7 +469,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "description",
     header: "description",
     cell: ({ row }) => (
-      <p>{row.original.description}</p>
+      <div className="w-32">
+        <TruncatedText text={row.original.description} maxLines={2} />
+      </div>
     ),
   },
 
