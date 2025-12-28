@@ -6,12 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="232014bd-9cd0-4008-bec2-98670508de8e" name="Changes" comment="some fixes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/audio_book/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/audio_book/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/books/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/books/data-table.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/category/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/category/data-table.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/events/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/events/data-table.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/api/book.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/book.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/api/category.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/category.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,7 +78,8 @@
       <workItem from="1763569058079" duration="10000" />
       <workItem from="1763569073501" duration="51000" />
       <workItem from="1763970869879" duration="8000" />
-      <workItem from="1766512658350" duration="1870000" />
+      <workItem from="1766512658350" duration="1955000" />
+      <workItem from="1766912620285" duration="806000" />
     </task>
     <task id="LOCAL-00001" summary="some fixes">
       <option name="closed" value="true" />

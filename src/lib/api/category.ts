@@ -15,6 +15,8 @@ interface ApiError {
 
 export const deleteCategory = async(id : string)  => {
     try {
+
+
         const response = await fetch(
             `${process.env.NEXT_PUBLIC_BASE_URL}/api/category/${id}`,
             {

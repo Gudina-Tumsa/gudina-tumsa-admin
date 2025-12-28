@@ -254,6 +254,29 @@ const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
           />
         </div>
 
+        <Label>Category</Label>
+        <Select
+            id="category"
+            name="category"
+            value={value}
+            onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select a category" />
+          </SelectTrigger>
+          <SelectContent>
+            {categories.map((cat) => {
+              console.log(cat)
+              return (
+
+                  <SelectItem key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </SelectItem>
+              )
+            })}
+          </SelectContent>
+        </Select>
+
         <div className="flex gap-2">
           <button
               className="px-4 py-2 bg-blue-600 text-white rounded"
