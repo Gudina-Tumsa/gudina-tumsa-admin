@@ -123,7 +123,8 @@ export const updateBook = async (updateBook: z.infer<typeof schema>)=> {
                 language: updateBook.language,
                 description: updateBook.description,
                 author : updateBook.author,
-                pageCount : updateBook.pageCount
+                pageCount : updateBook.pageCount,
+                categories: updateBook.category,
 
             }),
         });

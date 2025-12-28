@@ -178,6 +178,21 @@ export function DescriptionCell({ text }: { text: string }) {
 
 const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
   const [editedEvent, setEditedEvent] = React.useState(event)
+  const [value , setValue] = React.useState<string>("")
+  const [categories , setCategories] = React.useState([])
+
+  useEffect(() => {
+    getCategories({ page: 1, limit: 100 })
+        .then((res) => {
+          const _categories: CategoryInterface[] = res.data?.categories.map((data: any) => ({
+            id: data._id,
+            name: data.name,
+          })) || [];
+
+          setCategories(_categories);
+        })
+        .catch(() => toast.error("Failed to load categories"));
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -259,14 +274,24 @@ const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
             id="category"
             name="category"
             value={value}
-            onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}
+            onValueChange={(_value) => {
+              const selectedCategory = categories.find(cat => cat.id === _value);
+              if (!selectedCategory) return;
+
+              setValue(selectedCategory.id);
+
+              setEditedEvent(prev => ({
+                ...prev,
+                category: selectedCategory.id
+              }))
+            }}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
           <SelectContent>
-            {categories.map((cat) => {
-              console.log(cat)
+            {categories?.map((cat) => {
+
               return (
 
                   <SelectItem key={cat.id} value={cat.id}>
