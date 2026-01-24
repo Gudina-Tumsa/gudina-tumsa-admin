@@ -6,12 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="232014bd-9cd0-4008-bec2-98670508de8e" name="Changes" comment="some fixes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/audio_book/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/audio_book/data-table.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/books/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/books/data-table.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/books/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/books/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/category/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/category/data-table.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/users/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/users/data-table.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/users/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/users/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/nav-main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/nav-main.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/api/book.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/book.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -87,7 +85,7 @@
       <workItem from="1766912620285" duration="4356000" />
       <workItem from="1766945391314" duration="1102000" />
       <workItem from="1767421600678" duration="4683000" />
-      <workItem from="1769240138228" duration="3360000" />
+      <workItem from="1769240138228" duration="8056000" />
     </task>
     <task id="LOCAL-00001" summary="some fixes">
       <option name="closed" value="true" />

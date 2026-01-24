@@ -321,7 +321,7 @@ const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
 }
 
 
-export default function CreateBookSection() {
+export default function CreateBookSection({languageFilter, setLanguageFilter}: any ) {
 
   interface CategoryInterface {
     id  : string;
@@ -420,12 +420,31 @@ export default function CreateBookSection() {
   }, []);
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 w-full">
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline" size="sm">
-            + Upload Book
-          </Button>
+          <div className="w-full  flex justify-between items-center gap-2">
+            <div className="w-[140px]">
+              <Select value={languageFilter} onValueChange={setLanguageFilter}>
+                <SelectTrigger className="h-8 text-sm">
+                  <SelectValue placeholder="Language" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Languages</SelectItem>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="am">Amharic</SelectItem>
+                  <SelectItem value="om">Oromifa</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Button variant="outline" size="sm">
+                + Upload Book
+              </Button>
+            </div>
+
+          </div>
+
         </DialogTrigger>
         <DialogContent className="max-w-xl overflow-y-auto max-h-[90vh]">
           <DialogHeader>
@@ -466,7 +485,7 @@ export default function CreateBookSection() {
               </SelectTrigger>
               <SelectContent>
                 {categories.map((cat) => {
-                  console.log(cat)
+
                   return (
 
                       <SelectItem key={cat.id} value={cat.id}>
@@ -500,6 +519,7 @@ export default function CreateBookSection() {
             <Button onClick={handleSubmit} disabled={loading} className="w-full">
               {loading ? "Uploading..." : "Upload Book"}
             </Button>
+
           </div>
         </DialogContent>
       </Dialog>
@@ -807,7 +827,10 @@ export function DataTable({ data: initialData,   totalRows,
                             pageSize,
                             currentPage,
                             onPageChange,
-                            onPageSizeChange,}: { data: z.infer<typeof schema>[], totalRows: number;
+                            onPageSizeChange,
+                            languageFilter,
+                            setLanguageFilter
+                          }: { data: z.infer<typeof schema>[], totalRows: number;
   pageSize: number;
   currentPage: number;
   onPageChange: (page: number) => void;
@@ -896,7 +919,7 @@ export function DataTable({ data: initialData,   totalRows,
         </Select>
 
         <div></div>
-        <CreateBookSection/>
+        <CreateBookSection languageFilter={languageFilter} setLanguageFilter={setLanguageFilter} />
       </div>
       <TabsContent
         value="outline"

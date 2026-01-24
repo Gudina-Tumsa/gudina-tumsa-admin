@@ -120,7 +120,7 @@ export const schema = z.object({
   description: z.string(),
 })
 
-const TruncatedText = ({ text, maxLength = 50 }: { text: string; maxLength?: number }) => {
+const TruncatedText = ({ text, maxLength = 10 }: { text: string; maxLength?: number }) => {
   if (!text) return <span className="text-muted-foreground">-</span>
 
   const shouldTruncate = text.length > maxLength

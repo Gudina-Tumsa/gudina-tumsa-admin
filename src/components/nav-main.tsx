@@ -33,7 +33,7 @@ export function NavMain({
   useEffect(() => {
     const getRolesAsync = async () => {
       let roles = await getRoles({page : 1 , limit: 50})
-      console.log(user.user)
+
       for (const role of roles.data.roles) {
         if(role._id == user.user.role){
           setUserRole(role.name)

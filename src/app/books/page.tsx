@@ -32,15 +32,27 @@ export interface BooksPageProps {
 }
 
 
-export function useBooks(page: number, pageSize: number) {
+export function useBooks(page: number, pageSize: number, language = string) {
   const [books, setBooks] = useState<BookInterface[]>([])
   const [loading, setLoading] = useState(false)
   const [totalRows, setTotalRows] = useState(0)
 
+
+
   useEffect(() => {
     setLoading(true)
 
-    getBooks({ page, limit: pageSize })
+    const query: Record<string, any> = {
+      page,
+      limit: pageSize,
+    }
+    console.log({language : language})
+
+    if (language !== "all" && language !== "") {
+      query.language = language
+    }
+
+    getBooks(query)
         .then((data) => {
           const bookCollection: BookInterface[] = []
 
@@ -66,18 +78,22 @@ export function useBooks(page: number, pageSize: number) {
         })
         .catch((err) => console.error(err))
         .finally(() => setLoading(false))
-  }, [page, pageSize])
+  }, [page, pageSize, language])
 
   return { books, loading, totalRows }
 }
 
-// --- Page Component ---
+
 export default function Page() {
   const [page, setPage] = useState(1)
-
+  const [languageFilter, setLanguageFilter] = useState<string>("all")
   const pageSize = 10
 
-  const { books, loading, totalRows } = useBooks(page, pageSize)
+
+
+  const { books, loading, totalRows } = useBooks(page, pageSize, languageFilter)
+
+
 
   return (
       <SidebarProvider
@@ -89,7 +105,6 @@ export default function Page() {
           }
       >
         <AppSidebar variant="inset" />
-
         <SidebarInset>
           <div className="flex flex-1 flex-col">
             <div className="@container/main flex flex-1 flex-col gap-2">
@@ -97,18 +112,15 @@ export default function Page() {
                 {loading ? (
                     <div className="text-center text-muted">Loading books...</div>
                 ) : (
-                    <>
-                      <DataTable
-                          data={books}
-                          totalRows={totalRows}
-                          pageSize={pageSize}
-                          currentPage={page}
-                          onPageChange={setPage}
-                      />
-
-
-
-                    </>
+                    <DataTable
+                        data={books}
+                        totalRows={totalRows}
+                        pageSize={pageSize}
+                        currentPage={page}
+                        onPageChange={setPage}
+                        languageFilter={languageFilter}
+                        setLanguageFilter={setLanguageFilter}
+                    />
                 )}
               </div>
             </div>
