@@ -32,7 +32,7 @@ export interface BooksPageProps {
 }
 
 
-export function useBooks(page: number, pageSize: number, language = string) {
+function useBooks(page: number, pageSize: number, language = string) {
   const [books, setBooks] = useState<BookInterface[]>([])
   const [loading, setLoading] = useState(false)
   const [totalRows, setTotalRows] = useState(0)
