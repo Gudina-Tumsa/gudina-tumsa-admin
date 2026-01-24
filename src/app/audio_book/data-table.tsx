@@ -78,7 +78,7 @@ const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
           />
         </div>
         <div>
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description">About This Book</Label>
           <Input
               id="description"
               name="description"
@@ -265,7 +265,7 @@ export default function CreateBookSection() {
             <Label>ISBN</Label>
             <Input name="isbn" value={formData.isbn} onChange={handleInputChange} />
 
-            <Label>Description</Label>
+            <Label>About This Book</Label>
             <Input name="description" value={formData.description} onChange={handleInputChange} />
 
             <Label>Publisher</Label>
@@ -308,16 +308,16 @@ export default function CreateBookSection() {
             </Label>
             <Input name="pageCount" value={formData.pageCount} onChange={handleInputChange} />
 
-            <div className="flex items-center space-x-2 pt-2">
-              <Checkbox
-                id="active"
-                checked={formData.isActive}
-                onCheckedChange={(checked) =>
-                  setFormData((prev) => ({ ...prev, isActive: !!checked }))
-                }
-              />
-              <Label htmlFor="active">Is Active</Label>
-            </div>
+            {/*<div className="flex items-center space-x-2 pt-2">*/}
+            {/*  <Checkbox*/}
+            {/*    id="active"*/}
+            {/*    checked={formData.isActive}*/}
+            {/*    onCheckedChange={(checked) =>*/}
+            {/*      setFormData((prev) => ({ ...prev, isActive: !!checked }))*/}
+            {/*    }*/}
+            {/*  />*/}
+            {/*  <Label htmlFor="active">Is Active</Label>*/}
+            {/*</div>*/}
 
             <Button onClick={handleSubmit} disabled={loading} className="w-full">
               {loading ? "Uploading..." : "Upload Audio Book"}

@@ -52,6 +52,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { TooltipProvider , TooltipTrigger , TooltipContent} from "@/components/ui/tooltip";
 
 import { z } from "zod"
 

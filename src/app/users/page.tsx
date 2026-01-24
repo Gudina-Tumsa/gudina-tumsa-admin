@@ -18,8 +18,29 @@ interface usertype {
   username: string;
   phone: string;
   userrole: string;
+    createdAt : string;
   languagePreference: string;
 }
+
+function getDate(date: any) {
+    try {
+        const d = new Date(date)
+
+        if (isNaN(d.getTime())) return ""
+
+        return (
+            d.getFullYear() +
+            "-" +
+            String(d.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(d.getDate()).padStart(2, "0")
+        )
+    } catch (e) {
+        console.log({ error: e })
+        return ""
+    }
+}
+
 
 export default function Page() {
   const [users , setUsers] = useState<usertype[]>([])
@@ -35,6 +56,7 @@ export default function Page() {
             "username": n.username,
             "phone": n.phone ?? "",
             "userrole": n.role,
+            "createdAt" : getDate(n.createdAt),
             "languagePreference": n.languagePreference ?? ""
           })
         })

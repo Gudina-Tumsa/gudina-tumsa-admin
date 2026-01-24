@@ -50,7 +50,7 @@ export const deleteBook = async(id : string)  => {
 export const getBooks = async (request: GetBooksRequest , audioBook = false): Promise<BookListResponse> => {
     try {
         const params = new URLSearchParams();
-
+        console.log({request : request})
 
         if (request.search) params.append('search', request.search);
         if (request.categories) request.categories.forEach(cat => params.append('categories', cat));

@@ -223,7 +223,7 @@ const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
           />
         </div>
         <div>
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description">About This Book</Label>
           <Input
               id="description"
               name="description"
@@ -445,7 +445,7 @@ export default function CreateBookSection() {
             <Label>ISBN</Label>
             <Input name="isbn" value={formData.isbn} onChange={handleInputChange} />
 
-            <Label>Description</Label>
+            <Label>About This Book</Label>
             <Input name="description" value={formData.description} onChange={handleInputChange} />
 
             <Label>Publisher</Label>
@@ -486,16 +486,16 @@ export default function CreateBookSection() {
             <Label>page count</Label>
             <Input name="pageCount" value={formData.pageCount} onChange={handleInputChange} />
 
-            <div className="flex items-center space-x-2 pt-2">
-              <Checkbox
-                id="active"
-                checked={formData.isActive}
-                onCheckedChange={(checked) =>
-                  setFormData((prev) => ({ ...prev, isActive: !!checked }))
-                }
-              />
-              <Label htmlFor="active">Is Active</Label>
-            </div>
+            {/*<div className="flex items-center space-x-2 pt-2">*/}
+            {/*  <Checkbox*/}
+            {/*    id="active"*/}
+            {/*    checked={formData.isActive}*/}
+            {/*    onCheckedChange={(checked) =>*/}
+            {/*      setFormData((prev) => ({ ...prev, isActive: !!checked }))*/}
+            {/*    }*/}
+            {/*  />*/}
+            {/*  <Label htmlFor="active">Is Active</Label>*/}
+            {/*</div>*/}
 
             <Button onClick={handleSubmit} disabled={loading} className="w-full">
               {loading ? "Uploading..." : "Upload Book"}
@@ -803,19 +803,21 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
   )
 }
 
-export function DataTable({ data: initialData, }: { data: z.infer<typeof schema>[] }) {
+export function DataTable({ data: initialData,   totalRows,
+                            pageSize,
+                            currentPage,
+                            onPageChange,
+                            onPageSizeChange,}: { data: z.infer<typeof schema>[], totalRows: number;
+  pageSize: number;
+  currentPage: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange?: (size: number) => void;}) {
   const [data, setData] = React.useState(() => initialData)
-  const [rowSelection, setRowSelection] = React.useState({})
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 10,
-  })
+
   const sortableId = React.useId()
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
@@ -836,7 +838,7 @@ export function DataTable({ data: initialData, }: { data: z.infer<typeof schema>
       columnVisibility,
       rowSelection,
       columnFilters,
-      pagination,
+      // ⚠️ Do NOT include pagination here
     },
     getRowId: (row) => row.id.toString(),
     enableRowSelection: true,
@@ -844,13 +846,17 @@ export function DataTable({ data: initialData, }: { data: z.infer<typeof schema>
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
+
+    // Core models
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+
+    // 🔑 Critical: disable client-side pagination
+    manualPagination: true,
+    pageCount: Math.ceil(totalRows / pageSize), // optional, for getPageCount()
   })
 
   function handleDragEnd(event: DragEndEvent) {
@@ -949,74 +955,81 @@ export function DataTable({ data: initialData, }: { data: z.infer<typeof schema>
         </div>
         <div className="flex items-center justify-between px-4">
           <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+
+              Showing page {(currentPage - 1) * pageSize + 1} –
+              {totalRows/pageSize} of {totalRows} books
+
           </div>
+
           <div className="flex w-full items-center gap-8 lg:w-fit">
-            <div className="hidden items-center gap-2 lg:flex">
-              <Label htmlFor="rows-per-page" className="text-sm font-medium">
-                Rows per page
-              </Label>
-              <Select
-                value={`${table.getState().pagination.pageSize}`}
-                onValueChange={(value) => {
-                  table.setPageSize(Number(value))
-                }}
-              >
-                <SelectTrigger size="sm" className="w-20" id="rows-per-page">
-                  <SelectValue
-                    placeholder={table.getState().pagination.pageSize}
-                  />
-                </SelectTrigger>
-                <SelectContent side="top">
-                  {[10, 20, 30, 40, 50].map((pageSize) => (
-                    <SelectItem key={pageSize} value={`${pageSize}`}>
-                      {pageSize}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {onPageSizeChange && (
+                <div className="hidden items-center gap-2 lg:flex">
+                  <Label htmlFor="rows-per-page" className="text-sm font-medium">
+                    Rows per page
+                  </Label>
+                  <Select
+                      value={`${pageSize}`}
+                      onValueChange={(value) => {
+                        onPageSizeChange(Number(value));
+                      }}
+                  >
+                    <SelectTrigger size="sm" className="w-20" id="rows-per-page">
+                      <SelectValue placeholder={pageSize} />
+                    </SelectTrigger>
+                    <SelectContent side="top">
+                      {[10, 20, 30, 40, 50].map((size) => (
+                          <SelectItem key={size} value={`${size}`}>
+                            {size}
+                          </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+            )}
+
             <div className="flex w-fit items-center justify-center text-sm font-medium">
-              Page {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount()}
+              Page {currentPage} of {Math.ceil(totalRows / pageSize)}
             </div>
+
             <div className="ml-auto flex items-center gap-2 lg:ml-0">
               <Button
-                variant="outline"
-                className="hidden h-8 w-8 p-0 lg:flex"
-                onClick={() => table.setPageIndex(0)}
-                disabled={!table.getCanPreviousPage()}
+                  variant="outline"
+                  className="hidden h-8 w-8 p-0 lg:flex"
+                  onClick={() => onPageChange(1)}
+                  disabled={currentPage === 1}
               >
                 <span className="sr-only">Go to first page</span>
                 <IconChevronsLeft />
               </Button>
+
               <Button
-                variant="outline"
-                className="size-8"
-                size="icon"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
+                  variant="outline"
+                  className="size-8"
+                  size="icon"
+                  onClick={() => onPageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
               >
                 <span className="sr-only">Go to previous page</span>
                 <IconChevronLeft />
               </Button>
+
               <Button
-                variant="outline"
-                className="size-8"
-                size="icon"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
+                  variant="outline"
+                  className="size-8"
+                  size="icon"
+                  onClick={() => onPageChange(currentPage + 1)}
+                  disabled={currentPage >= Math.ceil(totalRows / pageSize)}
               >
                 <span className="sr-only">Go to next page</span>
                 <IconChevronRight />
               </Button>
+
               <Button
-                variant="outline"
-                className="hidden size-8 lg:flex"
-                size="icon"
-                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                disabled={!table.getCanNextPage()}
+                  variant="outline"
+                  className="hidden size-8 lg:flex"
+                  size="icon"
+                  onClick={() => onPageChange(Math.ceil(totalRows / pageSize))}
+                  disabled={currentPage === Math.ceil(totalRows / pageSize)}
               >
                 <span className="sr-only">Go to last page</span>
                 <IconChevronsRight />
