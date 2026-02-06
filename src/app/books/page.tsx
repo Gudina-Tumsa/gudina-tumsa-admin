@@ -32,11 +32,10 @@ export interface BooksPageProps {
 }
 
 
-function useBooks(page: number, pageSize: number, language = string) {
+function useBooks(page: number, pageSize: number, language = string , category = string) {
   const [books, setBooks] = useState<BookInterface[]>([])
   const [loading, setLoading] = useState(false)
   const [totalRows, setTotalRows] = useState(0)
-
 
 
   useEffect(() => {
@@ -50,6 +49,10 @@ function useBooks(page: number, pageSize: number, language = string) {
 
     if (language !== "all" && language !== "") {
       query.language = language
+    }
+
+    if (category !== "all" && category !== "") {
+      query.category = category
     }
 
     getBooks(query)
@@ -78,7 +81,7 @@ function useBooks(page: number, pageSize: number, language = string) {
         })
         .catch((err) => console.error(err))
         .finally(() => setLoading(false))
-  }, [page, pageSize, language])
+  }, [page, pageSize, language , category])
 
   return { books, loading, totalRows }
 }
@@ -87,11 +90,14 @@ function useBooks(page: number, pageSize: number, language = string) {
 export default function Page() {
   const [page, setPage] = useState(1)
   const [languageFilter, setLanguageFilter] = useState<string>("all")
+  const [categoryFilter , setCategoryFilter] = useState<string>("all")
   const pageSize = 10
 
 
 
-  const { books, loading, totalRows } = useBooks(page, pageSize, languageFilter)
+  const { books, loading, totalRows } = useBooks(page, pageSize, languageFilter, categoryFilter)
+
+
 
 
 
@@ -120,6 +126,8 @@ export default function Page() {
                         onPageChange={setPage}
                         languageFilter={languageFilter}
                         setLanguageFilter={setLanguageFilter}
+                        categoryFilter={categoryFilter}
+                        setCategoryFilter={setCategoryFilter}
                     />
                 )}
               </div>

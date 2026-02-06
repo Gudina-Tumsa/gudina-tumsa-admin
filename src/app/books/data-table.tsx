@@ -145,37 +145,6 @@ interface EditFormProps {
 
 
 
-export function DescriptionCell({ text }: { text: string }) {
-  const MAX_LENGTH = 50
-  const isLong = text.length > MAX_LENGTH
-  const shortText = isLong ? text.slice(0, MAX_LENGTH) + "..." : text
-
-  return (
-      <div className="w-full">
-        {isLong ? (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="link" className="p-0 text-left text-muted-foreground underline text-sm">
-                  {shortText} <span className="text-blue-500">Read More</span>
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Full Description</DialogTitle>
-                </DialogHeader>
-                <div className="max-h-[60vh] overflow-y-auto whitespace-pre-line text-sm text-muted-foreground">
-                  {text}
-                </div>
-              </DialogContent>
-            </Dialog>
-        ) : (
-            <p>{text}</p>
-        )}
-      </div>
-  )
-}
-
-
 const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
   const [editedEvent, setEditedEvent] = React.useState(event)
   const [value , setValue] = React.useState<string>("")
@@ -321,12 +290,9 @@ const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
 }
 
 
-export default function CreateBookSection({languageFilter, setLanguageFilter}: any ) {
+export default function CreateBookSection({languageFilter, setLanguageFilter , categoryFilter , setCategoryFilter}: any ) {
 
-  interface CategoryInterface {
-    id  : string;
-    name : string;
-  }
+
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<CategoryInterface[]>([]);
   const user = useSelector((state: RootState) => state.user)
@@ -424,18 +390,40 @@ export default function CreateBookSection({languageFilter, setLanguageFilter}: a
       <Dialog>
         <DialogTrigger asChild>
           <div className="w-full  flex justify-between items-center gap-2">
-            <div className="w-[140px]">
-              <Select value={languageFilter} onValueChange={setLanguageFilter}>
-                <SelectTrigger className="h-8 text-sm">
-                  <SelectValue placeholder="Language" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Languages</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="am">Amharic</SelectItem>
-                  <SelectItem value="om">Oromifa</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex items-center gap-2">
+              <div className="w-[140px]">
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="h-8 text-sm w-full">
+        <span className="truncate block text-left">
+          <SelectValue placeholder="Category" />
+        </span>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Category</SelectItem>
+                    {categories?.map((category: CategoryInterface) => (
+                        <SelectItem key={category.name} value={category.name}>
+                          {category.name}
+                        </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="w-[140px]">
+                <Select value={languageFilter} onValueChange={setLanguageFilter}>
+                  <SelectTrigger className="h-8 text-sm w-full">
+        <span className="truncate block text-left">
+          <SelectValue placeholder="Language" />
+        </span>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Languages</SelectItem>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="am">Amharic</SelectItem>
+                    <SelectItem value="om">Oromifa</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div>
               <Button variant="outline" size="sm">
@@ -446,6 +434,8 @@ export default function CreateBookSection({languageFilter, setLanguageFilter}: a
           </div>
 
         </DialogTrigger>
+
+
         <DialogContent className="max-w-xl overflow-y-auto max-h-[90vh]">
           <DialogHeader>
             <DialogTitle>Upload a New Book</DialogTitle>
@@ -496,12 +486,68 @@ export default function CreateBookSection({languageFilter, setLanguageFilter}: a
               </SelectContent>
             </Select>
 
-            <Label>Book File (EPUB/PDF)</Label>
-            <Input type="file"  onChange={(e) => setBookFile(e.target.files?.[0] ?? null)} />
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "20px" }}>
+              {/* Upload Book */}
+              <label
+                  htmlFor="bookFile"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "12px 24px",
+                    backgroundColor: "#4F46E5",
+                    color: "white",
+                    borderRadius: "12px",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    textAlign: "center",
+                    transition: "all 0.2s ease",
+                    boxShadow: "0 2px 6px rgba(79, 70, 229, 0.25)",
+                    border: "1px solid #4F46E5",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#4338CA")}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#4F46E5")}
+              >
+                📁 Upload Book
+              </label>
+              <input
+                  id="bookFile"
+                  type="file"
+                  style={{ display: "none" }}
+                  onChange={(e) => setBookFile(e.target.files?.[0] ?? null)}
+              />
 
-            <Label>Cover Image (PNG/JPEG)</Label>
-            <Input type="file" accept="image/*" onChange={(e) => setCoverImage(e.target.files?.[0] ?? null)} />
-
+              {/* Upload Cover Image */}
+              <label
+                  htmlFor="coverImage"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "12px 24px",
+                    backgroundColor: "#10B981",
+                    color: "white",
+                    borderRadius: "12px",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    textAlign: "center",
+                    transition: "all 0.2s ease",
+                    boxShadow: "0 2px 6px rgba(16, 185, 129, 0.25)",
+                    border: "1px solid #10B981",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#059669")}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#10B981")}
+              >
+                🖼️ Upload Cover Image
+              </label>
+              <input
+                  id="coverImage"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={(e) => setCoverImage(e.target.files?.[0] ?? null)}
+              />
+            </div>
             <Label>page count</Label>
             <Input name="pageCount" value={formData.pageCount} onChange={handleInputChange} />
 
@@ -523,6 +569,7 @@ export default function CreateBookSection({languageFilter, setLanguageFilter}: a
           </div>
         </DialogContent>
       </Dialog>
+
     </div>
   );
 }
@@ -829,12 +876,19 @@ export function DataTable({ data: initialData,   totalRows,
                             onPageChange,
                             onPageSizeChange,
                             languageFilter,
-                            setLanguageFilter
+                            setLanguageFilter,
+                            categoryFilter,
+                            setCategoryFilter
                           }: { data: z.infer<typeof schema>[], totalRows: number;
   pageSize: number;
   currentPage: number;
   onPageChange: (page: number) => void;
-  onPageSizeChange?: (size: number) => void;}) {
+  onPageSizeChange?: (size: number) => void;
+  languageFilter: string;
+  setLanguageFilter: (value: string) => void;
+  categoryFilter: string;
+  setCategoryFilter: (value: string) => void;
+}) {
   const [data, setData] = React.useState(() => initialData)
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -861,7 +915,7 @@ export function DataTable({ data: initialData,   totalRows,
       columnVisibility,
       rowSelection,
       columnFilters,
-      // ⚠️ Do NOT include pagination here
+
     },
     getRowId: (row) => row.id.toString(),
     enableRowSelection: true,
@@ -877,7 +931,7 @@ export function DataTable({ data: initialData,   totalRows,
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
 
-    // 🔑 Critical: disable client-side pagination
+
     manualPagination: true,
     pageCount: Math.ceil(totalRows / pageSize), // optional, for getPageCount()
   })
@@ -919,7 +973,7 @@ export function DataTable({ data: initialData,   totalRows,
         </Select>
 
         <div></div>
-        <CreateBookSection languageFilter={languageFilter} setLanguageFilter={setLanguageFilter} />
+        <CreateBookSection languageFilter={languageFilter} setLanguageFilter={setLanguageFilter} categoryFilter={categoryFilter}  setCategoryFilter={setCategoryFilter} />
       </div>
       <TabsContent
         value="outline"

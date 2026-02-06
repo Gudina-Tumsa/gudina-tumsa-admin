@@ -47,12 +47,13 @@ export const deleteBook = async(id : string)  => {
     }
 }
 
-export const getBooks = async (request: GetBooksRequest , audioBook = false): Promise<BookListResponse> => {
+export const getBooks = async (request: GetBooksRequest): Promise<BookListResponse> => {
     try {
         const params = new URLSearchParams();
 
+
         if (request.search) params.append('search', request.search);
-        if (request.categories) request.categories.forEach(cat => params.append('categories', cat));
+        if (request.category) params.append('category', request.category);
         if (request.tags) request.tags.forEach(tag => params.append('tags', tag));
         if (request.language) params.append('language', request.language);
         if (request.author) params.append('author', request.author);
@@ -63,43 +64,28 @@ export const getBooks = async (request: GetBooksRequest , audioBook = false): Pr
         if (request.limit) params.append('limit', String(request.limit));
         if (request.sort) params.append('sort', request.sort);
         if (request.savedByUser) params.append('savedByUser' , request.savedByUser)
-        if (request.contentType) {
-            params.append('contentType' , request.contentType)
-        }      else{
-            params.append('contentType' , 'Book')
-        }
-        if (audioBook) {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/audio-book?${params.toString()}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                const errorData: ApiError = await response.json();
-                throw new Error(errorData.message || 'Getting books failed');
-            }
-
-            const data: BookListResponse = await response.json();
-            return data;
+        if (request.contentType == undefined) {
+            params.append('contentType','Book')
         } else{
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book?${params.toString()}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                const errorData: ApiError = await response.json();
-                throw new Error(errorData.message || 'Getting books failed');
-            }
-
-            const data: BookListResponse = await response.json();
-            return data;
+            params.append('contentType', request.contentType);
         }
 
+        console.log({ requst : request })
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book?${params.toString()}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorData: ApiError = await response.json();
+            throw new Error(errorData.message || 'Getting books failed');
+        }
+
+        const data: BookListResponse = await response.json();
+        return data;
     } catch (error) {
         console.error('Get books error:', error);
         throw error;
