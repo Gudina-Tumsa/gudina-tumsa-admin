@@ -51,6 +51,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table"
 import { z } from "zod"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -133,7 +134,9 @@ export const schema = z.object({
   publicationYear: z.string(),
   category: z.string(),
   language: z.string(),
-  pageCount : z.string()
+  pageCount : z.string(),
+  price: z.number(),
+  payable: z.boolean(),
 
 })
 
@@ -238,6 +241,32 @@ const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
           />
         </div>
 
+        <div className="flex items-center space-x-2">
+          <Checkbox
+              id="payable"
+              checked={!!editedEvent.payable}
+              onCheckedChange={(checked) =>
+                  setEditedEvent(prev => ({ ...prev, payable: !!checked }))
+              }
+          />
+          <Label htmlFor="payable">Payable (requires purchase)</Label>
+        </div>
+
+        {editedEvent.payable && (
+            <div>
+              <Label htmlFor="price">Price (ETB)</Label>
+              <Input
+                  id="price"
+                  name="price"
+                  type="number"
+                  value={editedEvent.price ?? 0}
+                  onChange={(e) =>
+                      setEditedEvent(prev => ({ ...prev, price: Number(e.target.value) }))
+                  }
+              />
+            </div>
+        )}
+
         <Label>Category</Label>
         <Select
             id="category"
@@ -314,6 +343,8 @@ export default function CreateBookSection({languageFilter, setLanguageFilter , c
     uploadedBy: user.user?._id,
     isActive: true,
     metadata: {  },
+    payable: false,
+    price: 0,
   });
 
   const [bookFile, setBookFile] = useState<File | null>(null);
@@ -350,6 +381,9 @@ export default function CreateBookSection({languageFilter, setLanguageFilter , c
 
       const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book`, {
         method: "POST",
+        headers: {
+          'Authorization': `Bearer ${user.session?.token}`,
+        },
         body: form,
       });
 
@@ -551,6 +585,31 @@ export default function CreateBookSection({languageFilter, setLanguageFilter , c
             <Label>page count</Label>
             <Input name="pageCount" value={formData.pageCount} onChange={handleInputChange} />
 
+            <div className="flex items-center space-x-2 pt-2">
+              <Checkbox
+                id="payable"
+                checked={formData.payable}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({ ...prev, payable: !!checked }))
+                }
+              />
+              <Label htmlFor="payable">Payable (requires purchase)</Label>
+            </div>
+
+            {formData.payable && (
+                <>
+                  <Label>Price (ETB)</Label>
+                  <Input
+                      name="price"
+                      type="number"
+                      value={formData.price}
+                      onChange={(e) =>
+                          setFormData((prev) => ({ ...prev, price: Number(e.target.value) }))
+                      }
+                  />
+                </>
+            )}
+
             {/*<div className="flex items-center space-x-2 pt-2">*/}
             {/*  <Checkbox*/}
             {/*    id="active"*/}
@@ -696,11 +755,28 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     ),
 
   },
+  {
+    accessorKey: "payable",
+    header: "payable",
+    cell: ({ row }) => (
+        row.original.payable
+            ? <Badge variant="outline">Payable</Badge>
+            : <span className="text-muted-foreground">Free</span>
+    ),
+  },
+  {
+    accessorKey: "price",
+    header: "price (ETB)",
+    cell: ({ row }) => (
+        <p>{row.original.payable ? row.original.price : "-"}</p>
+    ),
+  },
 
   {
     id: "actions",
     cell: ({row}) => {
       const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+      const user = useSelector((state: RootState) => state.user)
 
       const handleAudioSummarization = async () => {
         const input = document.createElement("input");
@@ -720,6 +796,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/upload-audio-summarization`, {
               method: "POST",
+              headers: {
+                'Authorization': `Bearer ${user.session?.token}`,
+              },
               body: formData,
             });
 
@@ -752,6 +831,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/upload-cover-image`, {
               method: "POST",
+              headers: {
+                'Authorization': `Bearer ${user.session?.token}`,
+              },
               body: formData,
             });
 
@@ -769,7 +851,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       };
 
       const handleDelete = () => {
-        deleteBook(row.original.id)
+        deleteBook(row.original.id, user.session?.token)
             .then(() => {
               toast.success("book deleted successfully");
             })
@@ -779,7 +861,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       }
 
       const handleSave = (updatedEvent: z.infer<typeof schema>) => {
-        updateBook(updatedEvent)
+        updateBook(updatedEvent, user.session?.token)
             .then(() => {
               toast.success("Event updated successfully")
               setIsEditDialogOpen(false)

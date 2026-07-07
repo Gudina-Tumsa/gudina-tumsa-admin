@@ -105,6 +105,8 @@ import {
 
 } from "@/components/ui/tabs"
 import { useEffect, useState } from "react"
+import { useSelector } from "react-redux"
+import { RootState } from "@/app/store/store"
 import { getRoles } from "@/lib/api/roles"
 import {deleteUser , updateUser , UpdateUserRequest} from "@/lib/api/user"
 import {
@@ -231,6 +233,7 @@ const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
 export default function CreateUserSection() {
   const [loading, setLoading] = useState(false);
   const [roles, setRoles] = useState<Role[]>([]);
+  const user = useSelector((state: RootState) => state.user)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -243,13 +246,14 @@ export default function CreateUserSection() {
   });
 
   useEffect(() => {
-    getRoles({page : 1 , limit :100})
+    if (!user.session?.token) return
+    getRoles({page : 1 , limit :100}, user.session.token)
       .then((res) => {
         const _roles: Role[] = res.data?.roles.map((r: any) => ({ id: r._id, name: r.name })) || [];
         setRoles(_roles);
       })
       .catch(() => toast.error("Failed to load roles"));
-  }, []);
+  }, [user.session?.token]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -484,9 +488,10 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     id: "actions",
     cell: ({row}) => {
       const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false)
+      const user = useSelector((state: RootState) => state.user)
 
       const handleDelete = () => {
-        deleteUser(row.original.id)
+        deleteUser(row.original.id, user.session?.token)
             .then(() => {
               toast.success("User deleted successfully")
             })
@@ -509,7 +514,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
         if (updatedPassowrd && updatedPassowrd.trim() !== "") {
           values.password = updatedPassowrd
         }
-        updateUser(values , row.original.id)
+        updateUser(values , row.original.id, user.session?.token)
             .then(() => {
               toast.success("Role updated successfully")
               setIsEditDialogOpen(false)

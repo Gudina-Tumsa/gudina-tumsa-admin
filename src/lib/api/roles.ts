@@ -25,14 +25,15 @@ interface ApiError {
     statusCode: number;
 }
 
-export const deleteRole = async(id : string)  => {
+export const deleteRole = async(id : string, token: string)  => {
     try {
         const response = await fetch(
             `${process.env.NEXT_PUBLIC_BASE_URL}/api/role/${id}`,
             {
                 method : 'DELETE',
                 headers : {
-                    'Content-Type' : 'application/json'
+                    'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 }
             }
         )
@@ -47,7 +48,7 @@ export const deleteRole = async(id : string)  => {
     }
 }
 
-export const getRoles = async (request: GetRolesRequest): Promise<RoleListResponse> => {
+export const getRoles = async (request: GetRolesRequest, token: string): Promise<RoleListResponse> => {
     try {
         const { page, limit } = request;
 
@@ -57,6 +58,7 @@ export const getRoles = async (request: GetRolesRequest): Promise<RoleListRespon
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
             }
         );
@@ -75,13 +77,14 @@ export const getRoles = async (request: GetRolesRequest): Promise<RoleListRespon
 }
 
 
-export const updateRoleApi = async (updatedEvent: z.infer<typeof schema>)=> {
+export const updateRoleApi = async (updatedEvent: z.infer<typeof schema>, token: string)=> {
 
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/role/${updatedEvent.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify({
                 name: updatedEvent.name,

@@ -19,7 +19,8 @@ import {
   IconSearch,
   IconSettings,
   IconUsers,
-  IconDeviceAudioTape
+  IconDeviceAudioTape,
+  IconCash
 
 } from "@tabler/icons-react"
 
@@ -85,6 +86,12 @@ const data = {
       url: "/events",
       icon: IconUsers,
       showFor : ["admin" , "uploader"]
+    },
+    {
+      title: "Sales",
+      url: "/sales",
+      icon: IconCash,
+      showFor : ["admin"]
     },
   ],
 

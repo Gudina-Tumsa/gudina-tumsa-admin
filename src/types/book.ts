@@ -15,7 +15,7 @@ export interface BookData {
     category: string;
     tags: string[];
     language: string;
-    fileUrl: string;
+    fileUrl: string | null;
     coverImageUrl: string;
     fileSize: number;
     pageCount: number;
@@ -27,6 +27,9 @@ export interface BookData {
     isActive: boolean;
     metadata: Record<string, unknown>;
     contentType: string;
+    price: number;
+    payable: boolean;
+    audioSummarizationUrl: string | null;
 }
 
 

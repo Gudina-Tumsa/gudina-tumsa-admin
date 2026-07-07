@@ -31,8 +31,10 @@ export function NavMain({
   const user = useSelector((state) => state.user)
   const [ userRole , setUserRole]= useState("admin")
   useEffect(() => {
+    if (!user.session?.token) return
+
     const getRolesAsync = async () => {
-      let roles = await getRoles({page : 1 , limit: 50})
+      let roles = await getRoles({page : 1 , limit: 50}, user.session.token)
 
       for (const role of roles.data.roles) {
         if(role._id == user.user.role){
@@ -42,7 +44,7 @@ export function NavMain({
     }
 
     getRolesAsync()
-  },[])
+  },[user.session?.token])
 
   return (
     <SidebarGroup>

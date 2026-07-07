@@ -5,10 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="232014bd-9cd0-4008-bec2-98670508de8e" name="Changes" comment="some fixes">
+      <change afterPath="$PROJECT_DIR$/MARKETPLACE_INTEGRATION.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/audio_book/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/audio_book/data-table.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/audio_book/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/audio_book/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/books/data-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/books/data-table.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/books/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/books/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/app-sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/app-sidebar.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/api/book.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/book.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/book.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/book.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,6 +63,11 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
   <component name="RunManager" selected="npm.Next.js: server-side">
     <configuration name="Next.js: debug client-side" type="JavascriptDebugType" uri="http://localhost:3000/">
       <method v="2" />
@@ -98,7 +109,8 @@
       <workItem from="1769240138228" duration="10642000" />
       <workItem from="1769257112018" duration="217000" />
       <workItem from="1769335942453" duration="17000" />
-      <workItem from="1770365945539" duration="4797000" />
+      <workItem from="1770365945539" duration="4827000" />
+      <workItem from="1783345938340" duration="3852000" />
     </task>
     <task id="LOCAL-00001" summary="some fixes">
       <option name="closed" value="true" />

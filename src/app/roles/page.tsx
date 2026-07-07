@@ -5,6 +5,8 @@
 import { AppSidebar } from "@/components/app-sidebar"
 import { DataTable } from "./data-table"
 import {useEffect , useState} from "react"
+import {useSelector} from "react-redux"
+import {RootState} from "@/app/store/store"
 import {getRoles} from "./../../lib/api/roles"
 import {
   SidebarInset,
@@ -20,9 +22,11 @@ interface RoleInterface {
 export default function Page() {
 
   const [prevRoles , setRoles] = useState<RoleInterface[]>([])
+  const user = useSelector((state: RootState) => state.user)
   useEffect(() => {
+    if (!user.session?.token) return
 
-    getRoles({page : 1, limit : 20}).then((data)=> {
+    getRoles({page : 1, limit : 20}, user.session.token).then((data)=> {
       let _roles : RoleInterface[] = []
       data?.data?.roles.map((n)=>{
         let permissions = ""
@@ -40,7 +44,7 @@ export default function Page() {
     }).catch((err : unknown)=>{
       console.log(err)
     })
-  }, []);
+  }, [user.session?.token]);
 
   return (
     <SidebarProvider

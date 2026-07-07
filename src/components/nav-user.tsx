@@ -237,11 +237,11 @@ export function NavUser({
       console.log(formData)
 
       console.log("reached here2")
-      await updateUser(updates, user.user._id);
+      await updateUser(updates, user.user._id, user.session?.token);
 
       // get the user and set redux
       try {
-        const token = user?.user?.token
+        const token = user.session?.token
         let response = await getMe(token)
         // localStorage.setItem('accessToken', response.data.session.token);
         // localStorage.setItem('refreshToken', response.data.session.refreshToken);

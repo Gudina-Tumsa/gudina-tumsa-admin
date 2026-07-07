@@ -89,6 +89,8 @@ import {
 
 } from "@/components/ui/tabs"
 import { deleteRole , updateRoleApi } from "@/lib/api/roles"
+import { useSelector } from "react-redux"
+import { RootState } from "@/app/store/store"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
@@ -112,6 +114,7 @@ export interface CreateRoleRequest {
 
 export default function CreateSection() {
   const [loading, setLoading] = React.useState(false);
+  const user = useSelector((state: RootState) => state.user)
   const [formData, setFormData] = React.useState<CreateRoleRequest>({
     name: "",
     permissions: [],
@@ -163,6 +166,7 @@ export default function CreateSection() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${user.session?.token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -344,10 +348,11 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     id: "actions",
     cell: ({row}) => {
       const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false)
+      const user = useSelector((state: RootState) => state.user)
 
       const handleDelete = () => {
 
-        deleteRole(row.original.id)
+        deleteRole(row.original.id, user.session?.token)
             .then(() => {
               toast.success("Role deleted successfully")
             })
@@ -361,7 +366,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           toast.error("Invalid role");
           return;
         }
-        updateRoleApi(updatedEvent)
+        updateRoleApi(updatedEvent, user.session?.token)
             .then(() => {
               toast.success("Role updated successfully")
               setTimeout(() => {

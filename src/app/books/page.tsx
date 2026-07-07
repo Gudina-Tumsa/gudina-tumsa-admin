@@ -20,6 +20,8 @@ export interface BookInterface {
   category: string
   language: string
   pageCount: string
+  price: number
+  payable: boolean
 }
 
 export interface BooksPageProps {
@@ -72,6 +74,8 @@ function useBooks(page: number, pageSize: number, language = string , category =
                 category: n.category,
                 language: n.language,
                 pageCount: n.pageCount?.toString() ?? "",
+                price: n.price ?? 0,
+                payable: !!n.payable,
               })
             }
           })

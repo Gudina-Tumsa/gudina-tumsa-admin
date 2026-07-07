@@ -17,12 +17,13 @@ interface ApiError {
     statusCode: number;
 }
 
-export const updateUser = async (request : UpdateUserRequest , id : string) => {
+export const updateUser = async (request : UpdateUserRequest , id : string, token: string) => {
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify(request),
             credentials: 'include',
@@ -98,7 +99,7 @@ export interface PaginatedUsersResponse {
 }
 
 
-export const getUsers = async (request: GetUsersRequset): Promise<PaginatedUsersResponse> => {
+export const getUsers = async (request: GetUsersRequset, token: string): Promise<PaginatedUsersResponse> => {
     try {
         const params = new URLSearchParams();
 
@@ -121,6 +122,7 @@ export const getUsers = async (request: GetUsersRequset): Promise<PaginatedUsers
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
             },
         });
 
@@ -137,14 +139,15 @@ export const getUsers = async (request: GetUsersRequset): Promise<PaginatedUsers
     }
 };
 
-export const deleteUser = async(id : string)  => {
+export const deleteUser = async(id : string, token: string)  => {
     try {
         const response = await fetch(
             `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${id}`,
             {
                 method : 'DELETE',
                 headers : {
-                    'Content-Type' : 'application/json'
+                    'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 }
             }
         )

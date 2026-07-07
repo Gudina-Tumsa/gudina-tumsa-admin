@@ -25,14 +25,15 @@ interface ApiError {
 }
 
 
-export const deleteBook = async(id : string)  => {
+export const deleteBook = async(id : string, token: string)  => {
     try {
         const response = await fetch(
             `${process.env.NEXT_PUBLIC_BASE_URL}/api/book/${id}`,
             {
                 method : 'DELETE',
                 headers : {
-                    'Content-Type' : 'application/json'
+                    'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 }
             }
         )
@@ -93,13 +94,14 @@ export const getBooks = async (request: GetBooksRequest): Promise<BookListRespon
 };
 
 
-export const updateBook = async (updateBook: z.infer<typeof schema>)=> {
+export const updateBook = async (updateBook: z.infer<typeof schema>, token: string)=> {
 
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/${updateBook.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify({
                 title: updateBook.title,
@@ -110,6 +112,8 @@ export const updateBook = async (updateBook: z.infer<typeof schema>)=> {
                 author : updateBook.author,
                 pageCount : updateBook.pageCount,
                 categories: updateBook.category,
+                price: updateBook.price,
+                payable: updateBook.payable,
 
             }),
         });

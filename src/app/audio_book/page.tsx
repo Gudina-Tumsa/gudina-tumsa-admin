@@ -21,6 +21,8 @@ interface BookInterface {
   "language" : string;
   "pageCount" : string;
   contentType: string;
+  price: number;
+  payable: boolean;
 }
 export default function Page() {
   const [books , setBooks] = useState<BookInterface[]>([])
@@ -42,6 +44,8 @@ export default function Page() {
             "language" : n.language,
             "pageCount"  : n.pageCount.toString(),
             "contentType": n.contentType,
+            "price": n.price ?? 0,
+            "payable": !!n.payable,
           })
         }
 

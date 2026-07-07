@@ -5,6 +5,8 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { DataTable } from "./data-table"
 import {getUsers} from "./../../lib/api/user"
 import {useEffect , useState} from  "react"
+import {useSelector} from "react-redux"
+import {RootState} from "@/app/store/store"
 import {
   SidebarInset,
   SidebarProvider,
@@ -44,8 +46,10 @@ function getDate(date: any) {
 
 export default function Page() {
   const [users , setUsers] = useState<usertype[]>([])
+  const user = useSelector((state: RootState) => state.user)
   useEffect(() => {
-    getUsers({page : 1 , limit :  20}).then((data)=>{
+    if (!user.session?.token) return
+    getUsers({page : 1 , limit :  20}, user.session.token).then((data)=>{
       let userCollection : usertype[] = []
       data?.data?.users?.map((n)=>{
         userCollection.push({
@@ -64,7 +68,7 @@ export default function Page() {
     }).catch((err : unknown)=>{
         console.log(err)
     })
-  }, []);
+  }, [user.session?.token]);
 
   return (
     <SidebarProvider
