@@ -26,6 +26,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { VerificationProofButton } from "@/components/verification-proof"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -124,7 +125,7 @@ const buildColumns = (
   {
     accessorKey: "method",
     header: "Method",
-    cell: ({ row }) => <p>{row.original.method}</p>,
+    cell: ({ row }) => <p>{row.original.method}{row.original.bankName ? ` (${row.original.bankName})` : ""}</p>,
   },
   {
     accessorKey: "amountDue",
@@ -142,6 +143,18 @@ const buildColumns = (
     accessorKey: "finalized",
     header: "Finalized",
     cell: ({ row }) => (row.original.finalized ? "Yes" : "No"),
+  },
+  {
+    id: "proof",
+    header: "Proof",
+    cell: ({ row }) => (
+      <VerificationProofButton
+        saleId={row.original.id}
+        hasReceipt={row.original.hasReceipt}
+        transactionRef={row.original.transactionRef}
+        verificationResult={row.original.verificationResult}
+      />
+    ),
   },
   {
     accessorKey: "createdAt",

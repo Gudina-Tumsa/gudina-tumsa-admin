@@ -22,6 +22,7 @@ export interface BookInterface {
   pageCount: string
   price: number
   payable: boolean
+  isTodaysSelection: boolean
 }
 
 export interface BooksPageProps {
@@ -76,6 +77,7 @@ function useBooks(page: number, pageSize: number, language = string , category =
                 pageCount: n.pageCount?.toString() ?? "",
                 price: n.price ?? 0,
                 payable: !!n.payable,
+                isTodaysSelection: !!n.isTodaysSelection,
               })
             }
           })

@@ -9,6 +9,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { DataTable } from "./data-table"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { getAdminSales, getSalesSummary, refundSale, finalizeSale } from "@/lib/api/sales"
+import { mapSaleToRow } from "@/lib/sales-mapping"
 import { RootState } from "@/app/store/store"
 import toast from "react-hot-toast"
 
@@ -21,6 +22,10 @@ export interface SaleRow {
   finalized: boolean
   amountDue: number
   createdAt: string
+  transactionRef?: string
+  verificationResult?: string
+  hasReceipt?: boolean
+  bankName?: string
 }
 
 function useSales(token: string | undefined, page: number, pageSize: number, statusFilter: string) {
@@ -43,16 +48,7 @@ function useSales(token: string | undefined, page: number, pageSize: number, sta
       token
     )
       .then((res) => {
-        const rows: SaleRow[] = (res?.data?.sales ?? []).map((s: any) => ({
-          id: s._id,
-          bookTitle: s.book?.title ?? s.bookId,
-          buyerEmail: s.user?.email ?? s.userId,
-          method: s.method,
-          status: s.status,
-          finalized: !!s.finalized,
-          amountDue: s.amountDue,
-          createdAt: s.createdAt ? new Date(s.createdAt).toLocaleString() : "",
-        }))
+        const rows: SaleRow[] = (res?.data?.sales ?? []).map(mapSaleToRow)
         setSales(rows)
         setTotalRows(res?.data?.total ?? 0)
       })

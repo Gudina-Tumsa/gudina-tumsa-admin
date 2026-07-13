@@ -22,6 +22,7 @@ export interface BookData {
     downloadCount: number;
     viewCount: number;
     isFeatured: boolean;
+    isTodaysSelection: boolean;
     uploadDate: Date;
     uploadedBy: string;
     isActive: boolean;

@@ -114,6 +114,7 @@ export const updateBook = async (updateBook: z.infer<typeof schema>, token: stri
                 categories: updateBook.category,
                 price: updateBook.price,
                 payable: updateBook.payable,
+                isTodaysSelection: updateBook.isTodaysSelection,
 
             }),
         });

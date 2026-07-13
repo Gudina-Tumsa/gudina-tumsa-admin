@@ -20,7 +20,10 @@ import {
   IconSettings,
   IconUsers,
   IconDeviceAudioTape,
-  IconCash
+  IconCash,
+  IconToggleLeft,
+  IconUserCheck,
+  IconBuildingBank
 
 } from "@tabler/icons-react"
 
@@ -91,6 +94,24 @@ const data = {
       title: "Sales",
       url: "/sales",
       icon: IconCash,
+      showFor : ["admin"]
+    },
+    {
+      title: "Approvals",
+      url: "/approvals",
+      icon: IconUserCheck,
+      showFor : ["admin"]
+    },
+    {
+      title: "Bank Accounts",
+      url: "/bank-accounts",
+      icon: IconBuildingBank,
+      showFor : ["admin"]
+    },
+    {
+      title: "Payment Gateways",
+      url: "/payment-gateways",
+      icon: IconToggleLeft,
       showFor : ["admin"]
     },
   ],

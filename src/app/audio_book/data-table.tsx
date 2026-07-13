@@ -40,6 +40,7 @@ export const schema = z.object({
   pageCount : z.string(),
   price: z.number(),
   payable: z.boolean(),
+  isTodaysSelection: z.boolean(),
 
 })
 
@@ -152,6 +153,17 @@ const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
               />
             </div>
         )}
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+              id="isTodaysSelection"
+              checked={!!editedEvent.isTodaysSelection}
+              onCheckedChange={(checked) =>
+                  setEditedEvent(prev => ({ ...prev, isTodaysSelection: !!checked }))
+              }
+          />
+          <Label htmlFor="isTodaysSelection">Today&apos;s selection (max 4 books at a time)</Label>
+        </div>
 
         <div className="flex gap-2">
           <button
@@ -619,7 +631,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
               setIsEditDialogOpen(false)
             })
             .catch((err) => {
-              toast.error("Failed to update event")
+              toast.error(err?.message || "Failed to update event")
             })
 
       }

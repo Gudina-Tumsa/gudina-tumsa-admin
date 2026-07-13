@@ -23,6 +23,7 @@ interface BookInterface {
   contentType: string;
   price: number;
   payable: boolean;
+  isTodaysSelection: boolean;
 }
 export default function Page() {
   const [books , setBooks] = useState<BookInterface[]>([])
@@ -46,6 +47,7 @@ export default function Page() {
             "contentType": n.contentType,
             "price": n.price ?? 0,
             "payable": !!n.payable,
+            "isTodaysSelection": !!n.isTodaysSelection,
           })
         }
 

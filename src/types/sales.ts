@@ -29,10 +29,16 @@ export interface Sale {
     amountDue: number;
     transactionRef?: string;
     paymentId?: string;
+    // Legacy — older sales may still carry a JSON verification blob; new BANK_TRANSFER sales
+    // use receiptImagePath/bankAccount instead (a buyer-uploaded photo, manually reviewed).
+    verificationResult?: string;
+    receiptImagePath?: string;
     createdAt: string;
     updatedAt?: string;
     book?: SaleBookSummary;
     user?: SaleUserSummary;
+    payment?: { transactionRef?: string };
+    bankAccount?: { bankName?: string; accountNumber?: string; accountHolderName?: string };
 }
 
 export interface SalesListResponse {

@@ -10,6 +10,7 @@ import {
 export interface GetAdminSalesRequest {
     status?: SaleStatus;
     userId?: string;
+    email?: string;
     bookId?: string;
     from?: string;
     to?: string;
@@ -36,6 +37,7 @@ export const getAdminSales = async (
 
         if (request.status) params.append('status', request.status);
         if (request.userId) params.append('userId', request.userId);
+        if (request.email) params.append('email', request.email);
         if (request.bookId) params.append('bookId', request.bookId);
         if (request.from) params.append('from', request.from);
         if (request.to) params.append('to', request.to);
@@ -104,6 +106,26 @@ export const refundSale = async (id: string, token: string) => {
         console.error('Refund sale error:', error);
         throw error;
     }
+};
+
+// Fetches the buyer-uploaded receipt photo as a blob URL (the endpoint requires auth, so a
+// plain <img src="..."> can't be used directly) — caller is responsible for calling
+// URL.revokeObjectURL on the result once done with it.
+export const getSaleReceiptImageUrl = async (id: string, token: string): Promise<string> => {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/sales/${id}/receipt`,
+        {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${token}` },
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error('Failed to load receipt image');
+    }
+
+    const blob = await response.blob();
+    return URL.createObjectURL(blob);
 };
 
 export const finalizeSale = async (id: string, token: string) => {
