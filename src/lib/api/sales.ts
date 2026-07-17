@@ -4,6 +4,8 @@
 import {
     SalesListResponse,
     SalesSummaryResponse,
+    SalesReportResponse,
+    ReportGroupBy,
     SaleStatus,
 } from '@/types/sales';
 
@@ -16,6 +18,12 @@ export interface GetAdminSalesRequest {
     to?: string;
     page?: number;
     limit?: number;
+}
+
+export interface GetSalesReportRequest {
+    from?: string;
+    to?: string;
+    groupBy?: ReportGroupBy;
 }
 
 interface ApiError {
@@ -82,6 +90,36 @@ export const getSalesSummary = async (token: string): Promise<SalesSummaryRespon
         return await response.json();
     } catch (error) {
         console.error('Get sales summary error:', error);
+        throw error;
+    }
+};
+
+export const getSalesReport = async (
+    request: GetSalesReportRequest,
+    token: string
+): Promise<SalesReportResponse> => {
+    try {
+        const params = new URLSearchParams();
+        if (request.from) params.append('from', request.from);
+        if (request.to) params.append('to', request.to);
+        if (request.groupBy) params.append('groupBy', request.groupBy);
+
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/sales/admin/reports?${params.toString()}`,
+            {
+                method: 'GET',
+                headers: authHeaders(token),
+            }
+        );
+
+        if (!response.ok) {
+            const errorData: ApiError = await response.json();
+            throw new Error(errorData.message || 'Getting sales report failed');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Get sales report error:', error);
         throw error;
     }
 };

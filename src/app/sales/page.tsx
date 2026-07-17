@@ -88,9 +88,9 @@ function useSalesSummary(token: string | undefined, refreshIndex: number) {
         setSummary({
           totalSales: data.totalSales ?? 0,
           totalRevenue: data.totalRevenue ?? 0,
-          pendingSales: data.pendingSales ?? 0,
-          completedSales: data.completedSales ?? 0,
-          refundedSales: data.refundedSales ?? 0,
+          pendingSales: data.pendingCount ?? 0,
+          completedSales: data.completedCount ?? 0,
+          refundedSales: data.refundedCount ?? 0,
         })
       })
       .catch((err) => console.error(err))

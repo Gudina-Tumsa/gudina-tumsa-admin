@@ -23,7 +23,8 @@ import {
   IconCash,
   IconToggleLeft,
   IconUserCheck,
-  IconBuildingBank
+  IconBuildingBank,
+  IconReportMoney
 
 } from "@tabler/icons-react"
 
@@ -94,6 +95,12 @@ const data = {
       title: "Sales",
       url: "/sales",
       icon: IconCash,
+      showFor : ["admin"]
+    },
+    {
+      title: "Reports",
+      url: "/reports",
+      icon: IconReportMoney,
       showFor : ["admin"]
     },
     {
