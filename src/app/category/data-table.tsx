@@ -118,6 +118,7 @@ export const schema = z.object({
   name: z.string(),
   nameTranslations: z.record(z.string()),
   description: z.string(),
+  appliesTo: z.enum(["book", "product", "both"]).optional(),
 })
 
 const TruncatedText = ({ text, maxLength = 10 }: { text: string; maxLength?: number }) => {
@@ -152,6 +153,7 @@ export interface CreateCategoryRequest {
   parentCategory?: string;
   icon: string;
   isActive?: boolean;
+  appliesTo?: "book" | "product" | "both";
   createdBy: string;
 }
 
@@ -252,6 +254,23 @@ const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
           />
         </div>
 
+        <div>
+          <Label>Applies to</Label>
+          <Select
+              value={editedEvent.appliesTo ?? "both"}
+              onValueChange={(value) => setEditedEvent((prev) => ({ ...prev, appliesTo: value }))}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Applies to" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="both">Both books &amp; products</SelectItem>
+              <SelectItem value="book">Books only</SelectItem>
+              <SelectItem value="product">Products only</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={onCancel}>
             Cancel
@@ -272,6 +291,7 @@ export default function CreateSection() {
     parentCategory: "",
     icon: "",
     isActive: true,
+    appliesTo: "both",
     createdBy: user?.user?._id ?? "",
   });
 
@@ -314,6 +334,7 @@ export default function CreateSection() {
 
         icon: "",
         isActive: true,
+        appliesTo: "both",
         createdBy: user?.user?._id ?? "",
       });
       setTimeout(() => {
@@ -375,6 +396,23 @@ export default function CreateSection() {
               <div>
                 <Label>Description</Label>
                 <textarea name="description" className="w-full border rounded px-2 py-1" value={formData.description} onChange={handleChange} placeholder="Category description" />
+              </div>
+
+              <div>
+                <Label>Applies to</Label>
+                <Select
+                    value={formData.appliesTo ?? "both"}
+                    onValueChange={(value) => setFormData((prev) => ({ ...prev, appliesTo: value as "book" | "product" | "both" }))}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Applies to" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="both">Both books &amp; products</SelectItem>
+                    <SelectItem value="book">Books only</SelectItem>
+                    <SelectItem value="product">Products only</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* <div>
@@ -473,6 +511,13 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       <div className="w-32">
         <TruncatedText text={row.original.description} maxLines={2} />
       </div>
+    ),
+  },
+  {
+    accessorKey: "appliesTo",
+    header: "Applies to",
+    cell: ({ row }) => (
+      <Badge variant="outline">{row.original.appliesTo ?? "both"}</Badge>
     ),
   },
 

@@ -19,6 +19,7 @@ export interface CategoryData {
     parentCategory?: string | null;
     icon: string;
     isActive: boolean;
+    appliesTo?: 'book' | 'product' | 'both';
     createdAt: Date;
     createdBy: string;
 }

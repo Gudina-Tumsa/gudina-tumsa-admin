@@ -23,6 +23,7 @@ interface CategoryInterface {
   name: string;
   nameTranslations: Record<string, string>; // Object for translations
   description: string;
+  appliesTo?: "book" | "product" | "both";
 }
 
 export default function Page() {
@@ -39,6 +40,7 @@ export default function Page() {
                 ? JSON.parse(n.nameTranslations)
                 : n.nameTranslations || {},
             description: n.description,
+            appliesTo: n.appliesTo || "both",
           })) || []
           setCategories(bookCollection)
         })

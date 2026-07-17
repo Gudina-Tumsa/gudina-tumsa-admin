@@ -25,7 +25,9 @@ import {
   IconUserCheck,
   IconBuildingBank,
   IconReportMoney,
-  IconSparkles
+  IconSparkles,
+  IconPackage,
+  IconShoppingCart
 
 } from "@tabler/icons-react"
 
@@ -97,6 +99,18 @@ const data = {
       url: "/events",
       icon: IconUsers,
       showFor : ["admin" , "uploader"]
+    },
+    {
+      title: "Products",
+      url: "/products",
+      icon: IconPackage,
+      showFor : ["admin" , "uploader"]
+    },
+    {
+      title: "Orders",
+      url: "/orders",
+      icon: IconShoppingCart,
+      showFor : ["admin"]
     },
     {
       title: "Sales",
