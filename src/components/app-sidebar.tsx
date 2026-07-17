@@ -24,7 +24,8 @@ import {
   IconToggleLeft,
   IconUserCheck,
   IconBuildingBank,
-  IconReportMoney
+  IconReportMoney,
+  IconSparkles
 
 } from "@tabler/icons-react"
 
@@ -71,6 +72,12 @@ const data = {
       title : "Audio book",
       url: "/audio_book",
       icon : IconDeviceAudioTape,
+      showFor : ["admin" , "uploader"]
+    },
+    {
+      title: "Today's selection",
+      url: "/todays-selection",
+      icon: IconSparkles,
       showFor : ["admin" , "uploader"]
     },
     {

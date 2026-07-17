@@ -130,3 +130,53 @@ export const updateBook = async (updateBook: z.infer<typeof schema>, token: stri
         throw error;
     }
 }
+
+// GET /api/book/todays-selection requires auth (any logged-in user), and the backend caps
+// results at 4 regardless of the limit passed.
+export const getTodaysSelection = async (token: string): Promise<BookListResponse> => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/todays-selection?limit=4`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            const errorData: ApiError = await response.json();
+            throw new Error(errorData.message || "Getting today's selection failed");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Get today's selection error:", error);
+        throw error;
+    }
+};
+
+// Partial update — the backend only touches fields present in the body, so this doesn't
+// disturb the rest of the book. Throws with the backend's message (e.g. "max 4 books") if the
+// selection is already full and `selected` is true.
+export const setTodaysSelection = async (id: string, selected: boolean, token: string) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ isTodaysSelection: selected }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to update today's selection");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Set today's selection error:", error);
+        throw error;
+    }
+};
