@@ -1,3 +1,5 @@
+cd ios && RCT_NEW_ARCH_ENABLED=1 bundle exec pod install
+RCT_NEW_ARCH_ENABLED=1 bundle exec pod install
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
