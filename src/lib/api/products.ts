@@ -53,7 +53,6 @@ export interface ProductFormValues {
     name: string;
     description: string;
     category: string;
-    sku: string;
     price: number;
     stock: number;
     lowStockThreshold?: number;
@@ -70,7 +69,6 @@ const buildProductFormData = (values: Partial<ProductFormValues>) => {
     if (values.name !== undefined) formData.append('name', values.name);
     if (values.description !== undefined) formData.append('description', values.description);
     if (values.category !== undefined) formData.append('category', values.category);
-    if (values.sku !== undefined) formData.append('sku', values.sku);
     if (values.price !== undefined) formData.append('price', String(values.price));
     if (values.stock !== undefined) formData.append('stock', String(values.stock));
     if (values.lowStockThreshold !== undefined) formData.append('lowStockThreshold', String(values.lowStockThreshold));

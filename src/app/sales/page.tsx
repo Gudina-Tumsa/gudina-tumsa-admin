@@ -9,12 +9,14 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { DataTable } from "./data-table"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { getAdminSales, getSalesSummary, refundSale, finalizeSale } from "@/lib/api/sales"
+import { updateOrderStatus, finalizeOrder } from "@/lib/api/orders"
 import { mapSaleToRow } from "@/lib/sales-mapping"
 import { RootState } from "@/app/store/store"
 import toast from "react-hot-toast"
 
 export interface SaleRow {
   id: string
+  kind: "sale" | "order"
   bookTitle: string
   buyerEmail: string
   method: string
@@ -108,24 +110,29 @@ export default function Page() {
   const { sales, loading, totalRows, refresh } = useSales(token, page, pageSize, statusFilter)
   const summary = useSalesSummary(token, 0)
 
-  const handleRefund = (id: string) => {
+  // Order has no dedicated "refund" endpoint the way Sale does — refunding an order is just
+  // moving its status to REFUNDED via the same admin status-update endpoint the Orders page uses.
+  const handleRefund = (id: string, kind: "sale" | "order") => {
     if (!token) return
-    refundSale(id, token)
+    const request =
+      kind === "order" ? updateOrderStatus(id, { status: "refunded" as any }, token) : refundSale(id, token)
+    request
       .then(() => {
-        toast.success("Sale refunded")
+        toast.success(kind === "order" ? "Order refunded" : "Sale refunded")
         refresh()
       })
-      .catch(() => toast.error("Failed to refund sale"))
+      .catch(() => toast.error(kind === "order" ? "Failed to refund order" : "Failed to refund sale"))
   }
 
-  const handleFinalize = (id: string) => {
+  const handleFinalize = (id: string, kind: "sale" | "order") => {
     if (!token) return
-    finalizeSale(id, token)
+    const request = kind === "order" ? finalizeOrder(id, token) : finalizeSale(id, token)
+    request
       .then(() => {
-        toast.success("Sale finalized")
+        toast.success(kind === "order" ? "Order finalized" : "Sale finalized")
         refresh()
       })
-      .catch(() => toast.error("Failed to finalize sale"))
+      .catch(() => toast.error(kind === "order" ? "Failed to finalize order" : "Failed to finalize sale"))
   }
 
   return (

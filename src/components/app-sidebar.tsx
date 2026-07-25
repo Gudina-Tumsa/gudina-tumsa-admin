@@ -107,6 +107,12 @@ const data = {
       showFor : ["admin" , "uploader"]
     },
     {
+      title: "Product Categories",
+      url: "/products/categories",
+      icon: IconFolder,
+      showFor : ["admin" , "uploader"]
+    },
+    {
       title: "Orders",
       url: "/orders",
       icon: IconShoppingCart,

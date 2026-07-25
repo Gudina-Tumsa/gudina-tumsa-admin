@@ -273,7 +273,7 @@ export default function CreateBookSection() {
   };
 
   useEffect(() => {
-    getCategories({ page: 1, limit: 100 })
+    getCategories({ page: 1, limit: 100, appliesTo: "book" })
         .then((res) => {
           const _categories: CategoryInterface[] = res.data?.categories.map((data: any) => ({
             id: data._id,

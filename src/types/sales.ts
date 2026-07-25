@@ -1,44 +1,34 @@
 /* eslint-disable  */
 // @ts-nocheck
 
-export type SaleStatus = 'pending' | 'completed' | 'refunded';
+export type SaleStatus = 'pending' | 'completed' | 'refunded' | 'cancelled';
 
 export type PaymentMethod = 'CHAPA' | 'TELEBIRR' | 'STARPAY' | 'CASH' | 'BANK_TRANSFER';
 
-export interface SaleBookSummary {
-    _id?: string;
-    title: string;
-    author: string;
-    coverImageUrl?: string;
-    price: number;
-}
-
-export interface SaleUserSummary {
-    _id: string;
-    name?: string;
-    email?: string;
-}
+// "Sale" (book marketplace) and "Order" (shop/product checkout) are two separate purchase
+// paths/collections on the backend — GET /api/sales/admin/all merges both into this one flat
+// shape (see gudina-tumsa-backend/src/modules/sale/controller.ts:getAllSales) so the admin
+// panel shows every transaction in one list. `kind` tells you which backend model this row
+// came from, which matters for the finalize/refund actions (they hit different endpoints).
+export type SaleKind = 'sale' | 'order';
 
 export interface Sale {
     _id: string;
-    bookId: string;
-    userId: string;
+    kind: SaleKind;
+    // Book title for a `sale` row; "<orderNumber> (N items)" for an `order` row.
+    title: string;
+    buyerEmail?: string;
     method: PaymentMethod;
     status: SaleStatus;
     finalized: boolean;
     amountDue: number;
     transactionRef?: string;
-    paymentId?: string;
-    // Legacy — older sales may still carry a JSON verification blob; new BANK_TRANSFER sales
-    // use receiptImagePath/bankAccount instead (a buyer-uploaded photo, manually reviewed).
+    // Legacy — older sales may still carry a JSON verification blob; new BANK_TRANSFER
+    // sales/orders use receiptImagePath instead (a buyer-uploaded photo, manually reviewed).
     verificationResult?: string;
-    receiptImagePath?: string;
+    hasReceipt?: boolean;
+    bankName?: string;
     createdAt: string;
-    updatedAt?: string;
-    book?: SaleBookSummary;
-    user?: SaleUserSummary;
-    payment?: { transactionRef?: string };
-    bankAccount?: { bankName?: string; accountNumber?: string; accountHolderName?: string };
 }
 
 export interface SalesListResponse {
@@ -51,8 +41,11 @@ export interface SalesListResponse {
     };
 }
 
-export interface TopSellingBook {
-    bookId: string;
+// A top seller can be a Book (from Sales) or a shop Product (from Orders) — `type`
+// disambiguates since the two are unrelated catalogs on the backend.
+export interface TopSeller {
+    id: string;
+    type: 'book' | 'product';
     title: string;
     coverImageUrl?: string;
     salesCount: number;
@@ -68,7 +61,7 @@ export interface SalesSummaryData {
     pendingCount?: number;
     completedCount?: number;
     refundedCount?: number;
-    topBooks?: TopSellingBook[];
+    topSellers?: TopSeller[];
 }
 
 export interface SalesSummaryResponse {
@@ -105,7 +98,7 @@ export interface SalesReportData {
     totals: SalesReportTotals;
     revenueOverTime: RevenueOverTimePoint[];
     byMethod: RevenueByMethod[];
-    topBooks: TopSellingBook[];
+    topSellers: TopSeller[];
 }
 
 export interface SalesReportResponse {

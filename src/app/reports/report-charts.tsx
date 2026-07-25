@@ -31,7 +31,7 @@ import {
   RevenueOverTimePoint,
   ReportGroupBy,
   SalesReportTotals,
-  TopSellingBook,
+  TopSeller,
 } from "@/types/sales"
 
 const etb = (value: number) => `${(value ?? 0).toLocaleString()} ETB`
@@ -92,7 +92,7 @@ export function RevenueOverTimeChart({
     <Card className="@container/card h-full">
       <CardHeader>
         <CardTitle>Revenue over time</CardTitle>
-        <CardDescription>Finalized, non-refunded sales for the selected range</CardDescription>
+        <CardDescription>Finalized, non-refunded sales and orders for the selected range</CardDescription>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         {data.length === 0 ? (
@@ -183,12 +183,12 @@ export function RevenueByMethodChart({ data }: { data: RevenueByMethod[] }) {
   )
 }
 
-export function TopBooksTable({ books }: { books: TopSellingBook[] }) {
+export function TopSellersTable({ sellers }: { sellers: TopSeller[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Top selling books</CardTitle>
-        <CardDescription>Ranked by revenue for the selected range</CardDescription>
+        <CardTitle>Top sellers</CardTitle>
+        <CardDescription>Books and shop products, ranked by revenue for the selected range</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="overflow-hidden rounded-lg border">
@@ -196,25 +196,27 @@ export function TopBooksTable({ books }: { books: TopSellingBook[] }) {
             <TableHeader className="bg-muted">
               <TableRow>
                 <TableHead className="w-10">#</TableHead>
-                <TableHead>Book</TableHead>
+                <TableHead>Item</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead className="text-right">Sales</TableHead>
                 <TableHead className="text-right">Revenue</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {books.length === 0 ? (
+              {sellers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
+                  <TableCell colSpan={5} className="h-24 text-center">
                     No sales in this range.
                   </TableCell>
                 </TableRow>
               ) : (
-                books.map((book, index) => (
-                  <TableRow key={book.bookId}>
+                sellers.map((seller, index) => (
+                  <TableRow key={seller.id}>
                     <TableCell className="text-muted-foreground">{index + 1}</TableCell>
-                    <TableCell>{book.title}</TableCell>
-                    <TableCell className="text-right">{book.salesCount}</TableCell>
-                    <TableCell className="text-right">{etb(book.revenue)}</TableCell>
+                    <TableCell>{seller.title}</TableCell>
+                    <TableCell className="capitalize text-muted-foreground">{seller.type}</TableCell>
+                    <TableCell className="text-right">{seller.salesCount}</TableCell>
+                    <TableCell className="text-right">{etb(seller.revenue)}</TableCell>
                   </TableRow>
                 ))
               )}

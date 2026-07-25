@@ -155,7 +155,7 @@ const EditForm: React.FC<EditFormProps> = ({ event, onSave, onCancel }) => {
   const [categories , setCategories] = React.useState([])
 
   useEffect(() => {
-    getCategories({ page: 1, limit: 100 })
+    getCategories({ page: 1, limit: 100, appliesTo: "book" })
         .then((res) => {
           const _categories: CategoryInterface[] = res.data?.categories.map((data: any) => ({
             id: data._id,
@@ -419,7 +419,7 @@ export default function CreateBookSection({languageFilter, setLanguageFilter , c
   };
 
   useEffect(() => {
-    getCategories({ page: 1, limit: 100 })
+    getCategories({ page: 1, limit: 100, appliesTo: "book" })
         .then((res) => {
           const _categories: CategoryInterface[] = res.data?.categories.map((data: any) => ({
             id: data._id,

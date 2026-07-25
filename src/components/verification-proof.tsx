@@ -14,17 +14,22 @@ import {
 } from "@/components/ui/dialog"
 import { RootState } from "@/app/store/store"
 import { getSaleReceiptImageUrl } from "@/lib/api/sales"
+import { getOrderReceiptImageUrl } from "@/lib/api/orders"
 
 // Shared by the Sales table and the Approvals page — shows an admin the buyer-uploaded receipt
-// photo (Sale.receiptImagePath) before they approve a Bank Transfer sale. Falls back to the
-// legacy JSON verification blob for older sales that predate the photo-upload flow.
+// photo (Sale.receiptImagePath / Order.receiptImagePath) before they approve a Bank Transfer
+// purchase. `kind` picks which backend endpoint the receipt lives behind (Sale rows and Order
+// rows are unified into one list, but their receipts are served from different routes). Falls
+// back to the legacy JSON verification blob for older sales that predate the photo-upload flow.
 export function VerificationProofButton({
   saleId,
+  kind = "sale",
   hasReceipt,
   transactionRef,
   verificationResult,
 }: {
   saleId: string
+  kind?: "sale" | "order"
   hasReceipt?: boolean
   transactionRef?: string
   verificationResult?: string
@@ -42,7 +47,8 @@ export function VerificationProofButton({
     setOpen(true)
     if (hasReceipt && !imageUrl && token) {
       setLoading(true)
-      getSaleReceiptImageUrl(saleId, token)
+      const fetchReceipt = kind === "order" ? getOrderReceiptImageUrl : getSaleReceiptImageUrl
+      fetchReceipt(saleId, token)
         .then(setImageUrl)
         .catch(() => setImageUrl(null))
         .finally(() => setLoading(false))

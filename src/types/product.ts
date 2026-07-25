@@ -15,7 +15,6 @@ export interface Product {
     description: string;
     descriptionTranslations?: Record<string, string>;
     category: ProductCategorySummary | string;
-    sku: string;
     price: number;
     currency: string;
     images: string[];

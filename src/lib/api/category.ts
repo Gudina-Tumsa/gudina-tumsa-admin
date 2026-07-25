@@ -1,7 +1,7 @@
 /* eslint-disable  */
 // @ts-nocheck
 
-import { CategoryListResponse } from '@/types/category';
+import { CategoryData, CategoryListResponse } from '@/types/category';
 
 interface GetCategoriesRequest {
     page: number;
@@ -13,6 +13,37 @@ interface ApiError {
     message: string;
     statusCode: number;
 }
+
+export interface CreateCategoryRequest {
+    name: string;
+    nameTranslations?: Record<string, string>;
+    description: string;
+    parentCategory?: string;
+    icon?: string;
+    isActive?: boolean;
+    appliesTo?: 'book' | 'product' | 'both';
+    createdBy?: string;
+}
+
+export const createCategory = async (request: CreateCategoryRequest): Promise<{ data: { category: CategoryData } }> => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/category`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(request),
+        });
+
+        if (!response.ok) {
+            const errorData: ApiError = await response.json();
+            throw new Error(errorData.message || 'Creating category failed');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Create category error:', error);
+        throw error;
+    }
+};
 
 export const deleteCategory = async(id : string)  => {
     try {

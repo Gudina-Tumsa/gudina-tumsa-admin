@@ -78,7 +78,6 @@ interface ProductFormState {
   name: string
   description: string
   category: string
-  sku: string
   price: string
   stock: string
   lowStockThreshold: string
@@ -94,7 +93,6 @@ const emptyForm: ProductFormState = {
   name: "",
   description: "",
   category: "",
-  sku: "",
   price: "",
   stock: "0",
   lowStockThreshold: "5",
@@ -129,26 +127,25 @@ function ProductForm({
           onChange={(e) => onChange({ ...value, description: e.target.value })}
         />
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label>SKU</Label>
-          <Input value={value.sku} onChange={(e) => onChange({ ...value, sku: e.target.value })} />
-        </div>
-        <div>
+      <div>
+        <div className="flex items-center justify-between">
           <Label>Category</Label>
-          <Select value={value.category} onValueChange={(v) => onChange({ ...value, category: v })}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((c) => (
-                <SelectItem key={c._id} value={c._id}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <a href="/products/categories" target="_blank" className="text-xs text-muted-foreground underline">
+            Manage product categories
+          </a>
         </div>
+        <Select value={value.category} onValueChange={(v) => onChange({ ...value, category: v })}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select category" />
+          </SelectTrigger>
+          <SelectContent>
+            {categories.map((c) => (
+              <SelectItem key={c._id} value={c._id}>
+                {c.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <div className={value.isDigital ? "grid grid-cols-1 gap-3" : "grid grid-cols-3 gap-3"}>
         <div>
@@ -238,8 +235,8 @@ function CreateProductSection({ token, onCreated }: { token?: string; onCreated:
 
   const handleSubmit = async () => {
     if (!token) return
-    if (!form.name || !form.description || !form.category || !form.sku || !form.price) {
-      toast.error("Name, description, category, SKU and price are required")
+    if (!form.name || !form.description || !form.category || !form.price) {
+      toast.error("Name, description, category and price are required")
       return
     }
     setLoading(true)
@@ -249,7 +246,6 @@ function CreateProductSection({ token, onCreated }: { token?: string; onCreated:
           name: form.name,
           description: form.description,
           category: form.category,
-          sku: form.sku,
           price: Number(form.price),
           stock: Number(form.stock) || 0,
           lowStockThreshold: Number(form.lowStockThreshold) || 5,
@@ -320,7 +316,6 @@ function EditProductDialog({
     name: product.name,
     description: product.description,
     category: product.categoryId,
-    sku: product.sku,
     price: String(product.price),
     stock: String(product.stock),
     lowStockThreshold: String(product.lowStockThreshold),
@@ -343,7 +338,6 @@ function EditProductDialog({
           name: form.name,
           description: form.description,
           category: form.category,
-          sku: form.sku,
           price: Number(form.price),
           lowStockThreshold: Number(form.lowStockThreshold) || 5,
           type: form.type,
@@ -451,10 +445,6 @@ const buildColumns = (token: string | undefined, onRefresh: () => void): ColumnD
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => <p className="font-medium">{row.original.name}</p>,
-  },
-  {
-    accessorKey: "sku",
-    header: "SKU",
   },
   {
     accessorKey: "category",

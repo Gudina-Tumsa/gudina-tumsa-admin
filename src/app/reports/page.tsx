@@ -25,7 +25,7 @@ import {
   ReportSummaryCards,
   RevenueByMethodChart,
   RevenueOverTimeChart,
-  TopBooksTable,
+  TopSellersTable,
 } from "./report-charts"
 import toast from "react-hot-toast"
 
@@ -72,9 +72,9 @@ function exportReportCsv(report: SalesReportData, from: string, to: string) {
   rows.push(["Method", "Revenue (ETB)", "Sales"])
   report.byMethod.forEach((row) => rows.push([row.method, row.revenue, row.count]))
   rows.push([])
-  rows.push(["Top selling books"])
-  rows.push(["Title", "Sales", "Revenue (ETB)"])
-  report.topBooks.forEach((book) => rows.push([book.title, book.salesCount, book.revenue]))
+  rows.push(["Top sellers"])
+  rows.push(["Title", "Type", "Sales", "Revenue (ETB)"])
+  report.topSellers.forEach((seller) => rows.push([seller.title, seller.type, seller.salesCount, seller.revenue]))
 
   downloadCsv(`sales-report-${from}-to-${to}.csv`, rows)
 }
@@ -203,7 +203,7 @@ export default function Page() {
                     <RevenueByMethodChart data={report.byMethod} />
                   </div>
 
-                  <TopBooksTable books={report.topBooks} />
+                  <TopSellersTable sellers={report.topSellers} />
                 </>
               )}
             </div>

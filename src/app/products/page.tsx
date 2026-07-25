@@ -16,7 +16,6 @@ export interface ProductRow {
   id: string
   name: string
   description: string
-  sku: string
   category: string
   categoryId: string
   price: number
@@ -35,7 +34,6 @@ function mapProductToRow(product: any): ProductRow {
     id: product._id,
     name: product.name,
     description: product.description,
-    sku: product.sku,
     category: typeof product.category === "object" ? product.category?.name ?? "" : "",
     categoryId: typeof product.category === "string" ? product.category : product.category?._id ?? "",
     price: product.price,

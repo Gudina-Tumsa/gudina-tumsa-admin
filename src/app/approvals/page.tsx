@@ -23,10 +23,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { VerificationProofButton } from "@/components/verification-proof"
 import { RootState } from "@/app/store/store"
 import { getAdminSales, finalizeSale } from "@/lib/api/sales"
+import { finalizeOrder } from "@/lib/api/orders"
 import { mapSaleToRow } from "@/lib/sales-mapping"
 
 interface TransactionRow {
   id: string
+  kind: "sale" | "order"
   bookTitle: string
   method: string
   status: string
@@ -41,7 +43,7 @@ interface TransactionRow {
 
 const statusVariant = (status: string) => {
   if (status === "completed") return "default"
-  if (status === "refunded") return "destructive"
+  if (status === "refunded" || status === "cancelled") return "destructive"
   return "outline"
 }
 
@@ -82,10 +84,11 @@ export default function Page() {
     if (searchedEmail) runSearch(searchedEmail, value)
   }
 
-  const handleApprove = (id: string) => {
+  const handleApprove = (id: string, kind: "sale" | "order") => {
     if (!token) return
     setApprovingId(id)
-    finalizeSale(id, token)
+    const request = kind === "order" ? finalizeOrder(id, token) : finalizeSale(id, token)
+    request
       .then(() => {
         toast.success("Transaction approved")
         if (searchedEmail) runSearch(searchedEmail, statusFilter)
@@ -142,6 +145,7 @@ export default function Page() {
                           <SelectItem value="all">All statuses</SelectItem>
                           <SelectItem value="completed">Completed</SelectItem>
                           <SelectItem value="refunded">Refunded</SelectItem>
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -161,7 +165,7 @@ export default function Page() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Book</TableHead>
+                          <TableHead>Item</TableHead>
                           <TableHead>Method</TableHead>
                           <TableHead>Amount (ETB)</TableHead>
                           <TableHead>Status</TableHead>
@@ -176,7 +180,12 @@ export default function Page() {
                             !row.finalized && (row.method === "CASH" || row.method === "BANK_TRANSFER")
                           return (
                             <TableRow key={row.id}>
-                              <TableCell className="font-medium">{row.bookTitle}</TableCell>
+                              <TableCell className="font-medium">
+                                {row.bookTitle}
+                                <Badge variant={row.kind === "order" ? "secondary" : "outline"} className="ml-2">
+                                  {row.kind === "order" ? "Shop" : "Book"}
+                                </Badge>
+                              </TableCell>
                               <TableCell>{row.method}{row.bankName ? ` (${row.bankName})` : ""}</TableCell>
                               <TableCell>{row.amountDue}</TableCell>
                               <TableCell>
@@ -186,6 +195,7 @@ export default function Page() {
                               <TableCell>
                                 <VerificationProofButton
                                   saleId={row.id}
+                                  kind={row.kind}
                                   hasReceipt={row.hasReceipt}
                                   transactionRef={row.transactionRef}
                                   verificationResult={row.verificationResult}
@@ -196,7 +206,7 @@ export default function Page() {
                                   <Button
                                     size="sm"
                                     disabled={approvingId === row.id}
-                                    onClick={() => handleApprove(row.id)}
+                                    onClick={() => handleApprove(row.id, row.kind)}
                                   >
                                     {approvingId === row.id ? "Approving…" : "Approve"}
                                   </Button>

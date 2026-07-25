@@ -47,7 +47,7 @@ import { SaleRow } from "./page"
 
 const statusVariant = (status: string) => {
   if (status === "completed") return "default"
-  if (status === "refunded") return "destructive"
+  if (status === "refunded" || status === "cancelled") return "destructive"
   return "outline"
 }
 
@@ -109,13 +109,20 @@ function SalesSummaryCards({
 }
 
 const buildColumns = (
-  onRefund: (id: string) => void,
-  onFinalize: (id: string) => void
+  onRefund: (id: string, kind: "sale" | "order") => void,
+  onFinalize: (id: string, kind: "sale" | "order") => void
 ): ColumnDef<SaleRow>[] => [
   {
     accessorKey: "bookTitle",
-    header: "Book",
-    cell: ({ row }) => <p>{row.original.bookTitle}</p>,
+    header: "Item",
+    cell: ({ row }) => (
+      <div className="flex items-center gap-2">
+        <p>{row.original.bookTitle}</p>
+        <Badge variant={row.original.kind === "order" ? "secondary" : "outline"} className="shrink-0">
+          {row.original.kind === "order" ? "Shop" : "Book"}
+        </Badge>
+      </div>
+    ),
   },
   {
     accessorKey: "buyerEmail",
@@ -150,6 +157,7 @@ const buildColumns = (
     cell: ({ row }) => (
       <VerificationProofButton
         saleId={row.original.id}
+        kind={row.original.kind}
         hasReceipt={row.original.hasReceipt}
         transactionRef={row.original.transactionRef}
         verificationResult={row.original.verificationResult}
@@ -185,12 +193,12 @@ const buildColumns = (
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">
             {canFinalize && (
-              <DropdownMenuItem onClick={() => onFinalize(row.original.id)}>
+              <DropdownMenuItem onClick={() => onFinalize(row.original.id, row.original.kind)}>
                 Mark as Finalized
               </DropdownMenuItem>
             )}
             {canRefund && (
-              <DropdownMenuItem variant="destructive" onClick={() => onRefund(row.original.id)}>
+              <DropdownMenuItem variant="destructive" onClick={() => onRefund(row.original.id, row.original.kind)}>
                 Refund
               </DropdownMenuItem>
             )}
@@ -227,8 +235,8 @@ export function DataTable({
   onPageChange: (page: number) => void
   statusFilter: string
   setStatusFilter: (value: string) => void
-  onRefund: (id: string) => void
-  onFinalize: (id: string) => void
+  onRefund: (id: string, kind: "sale" | "order") => void
+  onFinalize: (id: string, kind: "sale" | "order") => void
 }) {
   const columns = React.useMemo(() => buildColumns(onRefund, onFinalize), [onRefund, onFinalize])
 
@@ -255,6 +263,7 @@ export function DataTable({
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="completed">Completed</SelectItem>
               <SelectItem value="refunded">Refunded</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
             </SelectContent>
           </Select>
         </div>
