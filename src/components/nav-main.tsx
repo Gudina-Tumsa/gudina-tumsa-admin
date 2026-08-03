@@ -99,7 +99,11 @@ export function NavMain({
             if (item.showFor.includes(userRole)){  return  (
                 <SidebarMenuItem key={item.title}>
                   <Link href={item.url} >
-                    <SidebarMenuButton tooltip={item.title} isActive={item.url === activeUrl}>
+                    <SidebarMenuButton
+                      tooltip={item.title}
+                      isActive={item.url === activeUrl}
+                      className="data-[active=true]:bg-purple-100 data-[active=true]:text-purple-700 data-[active=true]:font-medium dark:data-[active=true]:bg-purple-500/20 dark:data-[active=true]:text-purple-300"
+                    >
                       {item.icon && <item.icon />}
                       <span>{item.title}</span>
                       {badgeCount > 0 && (
