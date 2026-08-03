@@ -76,6 +76,26 @@ export const updateOrderStatus = async (
     }
 };
 
+export const rejectOrder = async (id: string, reason: string, token: string): Promise<OrderResponse> => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/order/admin/${id}/reject`, {
+            method: 'PATCH',
+            headers: authHeaders(token),
+            body: JSON.stringify({ reason }),
+        });
+
+        if (!response.ok) {
+            const errorData: ApiError = await response.json();
+            throw new Error(errorData.message || 'Rejecting order failed');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Reject order error:', error);
+        throw error;
+    }
+};
+
 export const finalizeOrder = async (id: string, token: string): Promise<OrderResponse> => {
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/order/admin/${id}/finalize`, {

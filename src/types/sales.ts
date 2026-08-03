@@ -1,7 +1,7 @@
 /* eslint-disable  */
 // @ts-nocheck
 
-export type SaleStatus = 'pending' | 'completed' | 'refunded' | 'cancelled';
+export type SaleStatus = 'pending' | 'completed' | 'refunded' | 'cancelled' | 'rejected';
 
 export type PaymentMethod = 'CHAPA' | 'TELEBIRR' | 'STARPAY' | 'CASH' | 'BANK_TRANSFER';
 
@@ -28,6 +28,7 @@ export interface Sale {
     verificationResult?: string;
     hasReceipt?: boolean;
     bankName?: string;
+    rejectionReason?: string;
     createdAt: string;
 }
 

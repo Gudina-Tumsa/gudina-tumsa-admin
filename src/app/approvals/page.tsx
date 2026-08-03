@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { VerificationProofButton } from "@/components/verification-proof"
+import { VerificationProofButton, RejectTransactionButton } from "@/components/verification-proof"
 import { RootState } from "@/app/store/store"
 import { getAdminSales, finalizeSale } from "@/lib/api/sales"
 import { finalizeOrder } from "@/lib/api/orders"
@@ -39,11 +39,12 @@ interface TransactionRow {
   verificationResult?: string
   hasReceipt?: boolean
   bankName?: string
+  rejectionReason?: string
 }
 
 const statusVariant = (status: string) => {
   if (status === "completed") return "default"
-  if (status === "refunded" || status === "cancelled") return "destructive"
+  if (status === "refunded" || status === "cancelled" || status === "rejected") return "destructive"
   return "outline"
 }
 
@@ -146,6 +147,7 @@ export default function Page() {
                           <SelectItem value="completed">Completed</SelectItem>
                           <SelectItem value="refunded">Refunded</SelectItem>
                           <SelectItem value="cancelled">Cancelled</SelectItem>
+                          <SelectItem value="rejected">Rejected</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -199,17 +201,25 @@ export default function Page() {
                                   hasReceipt={row.hasReceipt}
                                   transactionRef={row.transactionRef}
                                   verificationResult={row.verificationResult}
+                                  rejectionReason={row.rejectionReason}
                                 />
                               </TableCell>
                               <TableCell className="text-right">
                                 {canApprove ? (
-                                  <Button
-                                    size="sm"
-                                    disabled={approvingId === row.id}
-                                    onClick={() => handleApprove(row.id, row.kind)}
-                                  >
-                                    {approvingId === row.id ? "Approving…" : "Approve"}
-                                  </Button>
+                                  <div className="flex justify-end gap-2">
+                                    <RejectTransactionButton
+                                      saleId={row.id}
+                                      kind={row.kind}
+                                      onRejected={() => searchedEmail && runSearch(searchedEmail, statusFilter)}
+                                    />
+                                    <Button
+                                      size="sm"
+                                      disabled={approvingId === row.id}
+                                      onClick={() => handleApprove(row.id, row.kind)}
+                                    >
+                                      {approvingId === row.id ? "Approving…" : "Approve"}
+                                    </Button>
+                                  </div>
                                 ) : (
                                   <span className="text-xs text-muted-foreground">—</span>
                                 )}

@@ -361,6 +361,8 @@ export default function CreateBookSection({languageFilter, setLanguageFilter , c
 
   const [bookFile, setBookFile] = useState<File | null>(null);
   const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -371,48 +373,74 @@ export default function CreateBookSection({languageFilter, setLanguageFilter , c
   };
 
   const handleSubmit = async () => {
+    if (!bookFile || !coverImage) {
+      toast.error("Please upload both book file and cover image.");
+      return;
+    }
+
+    setLoading(true);
+    setUploadProgress(0);
+    setUploadError(null);
+
+    const form = new FormData();
+    form.append("bookFile", bookFile);
+    form.append("coverImage", coverImage);
+    for (const key in formData) {
+      const value = formData[key as keyof typeof formData];
+      if (typeof value === "object") {
+        form.append(key, JSON.stringify(value));
+      } else {
+        form.append(key, value as string);
+      }
+    }
+
     try {
-      if (!bookFile || !coverImage) {
-        toast.error("Please upload both book file and cover image.");
-        return;
-      }
+      // fetch() has no upload-progress event, so use XHR to drive the progress bar and to
+      // surface the backend's actual error message instead of a generic "upload failed" toast.
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", `${process.env.NEXT_PUBLIC_BASE_URL}/api/book`);
+        xhr.setRequestHeader("Authorization", `Bearer ${user.session?.token}`);
 
-      setLoading(true);
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            setUploadProgress(Math.round((e.loaded / e.total) * 100));
+          }
+        };
 
-      const form = new FormData();
-      form.append("bookFile", bookFile);
-      form.append("coverImage", coverImage);
-      for (const key in formData) {
-        const value = formData[key as keyof typeof formData];
-        if (typeof value === "object") {
-          form.append(key, JSON.stringify(value));
-        } else {
-          form.append(key, value as string);
-        }
-      }
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve();
+            return;
+          }
+          let message = `Upload failed (${xhr.status})`;
+          try {
+            const parsed = JSON.parse(xhr.responseText);
+            message = parsed?.message || message;
+          } catch {
+            // response wasn't JSON — keep the generic status-based message
+          }
+          reject(new Error(message));
+        };
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book`, {
-        method: "POST",
-        headers: {
-          'Authorization': `Bearer ${user.session?.token}`,
-        },
-        body: form,
+        xhr.onerror = () => reject(new Error("Network error while uploading — check your connection and try again."));
+
+        xhr.send(form);
       });
 
-      if (!res.ok) throw new Error("Failed to upload book");
-
       toast.success("Book uploaded successfully");
-
-
+      setUploadProgress(100);
       setBookFile(null);
       setCoverImage(null);
 
       setTimeout(() => {
         window.location.reload();
-      }, 2000);
-    } catch (error) {
+      }, 1500);
+    } catch (error: any) {
       console.error(error);
-      toast.error("Failed to upload book");
+      const message = error?.message || "Failed to upload book";
+      setUploadError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -633,8 +661,26 @@ export default function CreateBookSection({languageFilter, setLanguageFilter , c
             {/*  <Label htmlFor="active">Is Active</Label>*/}
             {/*</div>*/}
 
+            {loading && (
+              <div className="space-y-1">
+                <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full bg-primary transition-all duration-200"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground text-right">{uploadProgress}%</p>
+              </div>
+            )}
+
+            {uploadError && (
+              <div className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {uploadError}
+              </div>
+            )}
+
             <Button onClick={handleSubmit} disabled={loading} className="w-full">
-              {loading ? "Uploading..." : "Upload Book"}
+              {loading ? `Uploading… ${uploadProgress}%` : "Upload Book"}
             </Button>
 
           </div>

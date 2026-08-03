@@ -20,5 +20,6 @@ export function mapSaleToRow(sale: any) {
     verificationResult: sale.verificationResult,
     hasReceipt: !!sale.hasReceipt,
     bankName: sale.bankName,
+    rejectionReason: sale.rejectionReason,
   }
 }

@@ -8,7 +8,8 @@ export type OrderStatus =
     | 'shipped'
     | 'delivered'
     | 'cancelled'
-    | 'refunded';
+    | 'refunded'
+    | 'rejected';
 
 export type PaymentMethod = 'CHAPA' | 'TELEBIRR' | 'STARPAY' | 'CASH' | 'BANK_TRANSFER';
 
@@ -59,6 +60,7 @@ export interface Order {
     receiptImagePath?: string;
     trackingNumber?: string;
     notes?: string;
+    rejectionReason?: string;
     createdAt: string;
     updatedAt?: string;
 }
