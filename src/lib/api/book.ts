@@ -111,7 +111,9 @@ export const updateBook = async (updateBook: z.infer<typeof schema>, token: stri
                 description: updateBook.description,
                 author : updateBook.author,
                 pageCount : updateBook.pageCount,
-                categories: updateBook.category,
+                // The edit form starts with the category *name* from the table row; only send
+                // it when the user picked a category (a 24-char ObjectId), otherwise leave it unchanged.
+                categories: /^[a-f\d]{24}$/i.test(updateBook.category ?? "") ? updateBook.category : undefined,
                 price: updateBook.price,
                 payable: updateBook.payable,
                 isTodaysSelection: updateBook.isTodaysSelection,
