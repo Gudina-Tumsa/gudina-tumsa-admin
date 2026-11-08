@@ -188,7 +188,7 @@ export default function Page() {
                                   {row.kind === "order" ? "Shop" : "Book"}
                                 </Badge>
                               </TableCell>
-                              <TableCell>{row.method}{row.bankName ? ` (${row.bankName})` : ""}</TableCell>
+                              <TableCell>{row.method === "TELEBIRR" ? "telebirr" : row.method}{row.bankName ? ` (${row.bankName})` : ""}</TableCell>
                               <TableCell>{row.amountDue}</TableCell>
                               <TableCell>
                                 <Badge variant={statusVariant(row.status)}>{row.status}</Badge>

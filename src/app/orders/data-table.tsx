@@ -145,7 +145,7 @@ function OrderDetailDialog({
           <div>
             <p className="font-medium">Payment</p>
             <p className="text-muted-foreground">
-              {order.payment?.method} · {order.payment?.status}
+              {order.payment?.method === "TELEBIRR" ? "telebirr" : order.payment?.method} · {order.payment?.status}
               {order.payment?.transactionRef ? ` · ${order.payment.transactionRef}` : ""}
             </p>
           </div>

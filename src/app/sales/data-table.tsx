@@ -132,7 +132,7 @@ const buildColumns = (
   {
     accessorKey: "method",
     header: "Method",
-    cell: ({ row }) => <p>{row.original.method}{row.original.bankName ? ` (${row.original.bankName})` : ""}</p>,
+    cell: ({ row }) => <p>{row.original.method === "TELEBIRR" ? "telebirr" : row.original.method}{row.original.bankName ? ` (${row.original.bankName})` : ""}</p>,
   },
   {
     accessorKey: "amountDue",
